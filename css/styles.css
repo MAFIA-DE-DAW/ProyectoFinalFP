@@ -1,0 +1,236 @@
+/* CSS LOGIN, REGISTRO, CREAR_MASCOTA */
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Trebuchet MS", sans-serif;
+}
+
+/* Fondo tipo videojuego */
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle at top, #c084fc, #7e22ce, #4c1d95);
+}
+
+/* Pantalla tipo dispositivo */
+.form-container {
+    width: 360px;
+    padding: 40px;
+    background: #f8f5ff;
+    border-radius: 25px;
+    border: 6px solid #6b21a8;
+    box-shadow:
+        0 0 20px rgba(168, 85, 247, 0.7),
+        inset 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Título */
+.form-container h2 {
+    color: #6b21a8;
+    margin-bottom: 20px;
+    font-size: 26px;
+}
+
+/* Labels */
+label {
+    display: block;
+    margin-top: 12px;
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #4c1d95;
+}
+
+/* Inputs */
+input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid #c084fc;
+    background: #ffffff;
+    transition: 0.3s;
+}
+
+/* efecto digital */
+input:focus {
+    border-color: #9333ea;
+    box-shadow: 0 0 8px #c084fc;
+}
+
+/* Botón */
+button {
+
+    margin-top: 20px;
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(90deg, #9333ea, #c084fc);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+/* efecto botón juego */
+button:hover {
+
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 15px rgba(147, 51, 234, 0.5);
+}
+
+/* FIN DE CSS LOGIN, REGISTRO, CREAR_MASCOTA */
+/* CSS DASHBOARD */
+body {
+    background: linear-gradient(135deg, #5f2c82, #9b59b6);
+    font-family: Arial;
+    margin: 0;
+    color: white;
+}
+
+.dashboard {
+    width: 900px;
+    margin: auto;
+    padding: 30px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.usuario {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.logout {
+    background: #ff5c8a;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+}
+
+.game-container {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    border-radius: 20px;
+}
+
+.mascota {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.mascota-img {
+    font-size: 80px;
+}
+
+.acciones {
+    margin-top: 25px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.acciones button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    background: #9333ea;
+    color: white;
+    cursor: pointer;
+}
+
+/* CONTENEDOR GENERAL */
+
+.estadisticas {
+    margin-top: 30px;
+    width: 100%;
+}
+
+/* CADA ESTADÍSTICA */
+
+.barra {
+    margin-bottom: 20px;
+}
+
+.barra label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+/* BARRA VACÍA */
+
+.progreso {
+    width: 100%;
+    height: 22px;
+    background: #2a2a3f;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.6);
+}
+
+/* BARRA LLENA */
+
+.valor {
+    height: 100%;
+    border-radius: 20px;
+    transition: width 0.4s ease;
+    background: linear-gradient(90deg, #a855f7, #7c3aed);
+}
+
+.barra:nth-child(1) .valor {
+    background: linear-gradient(90deg, #ff7b7b, #ff3b3b);
+}
+
+.barra:nth-child(2) .valor {
+    background: linear-gradient(90deg, #7bb8ff, #3b7bff);
+}
+
+.barra:nth-child(3) .valor {
+    background: linear-gradient(90deg, #7bffb5, #00d084);
+}
+
+.barra:nth-child(4) .valor {
+    background: linear-gradient(90deg, #d37bff, #8a2be2);
+}
+
+/* CONTROLANDO BARRAS SEGUN VAN BAJANDO */
+
+.valor{
+    height:100%;
+    border-radius:20px;
+    transition: width 0.4s ease;
+}
+
+/* ESTADO ALTO */
+
+.alto{
+    background: linear-gradient(90deg,#00ff9c,#00c97a);
+}
+
+/* ESTADO MEDIO */
+
+.medio{
+    background: linear-gradient(90deg,#ffe066,#ffb703);
+}
+
+/* ESTADO BAJO */
+
+.bajo{
+    background: linear-gradient(90deg,#ff6b6b,#d90429);
+}
+
+/* FIN DE CSS DASHBOARD */
