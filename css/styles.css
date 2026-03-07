@@ -84,153 +84,203 @@ button:hover {
     box-shadow: 0 6px 15px rgba(147, 51, 234, 0.5);
 }
 
+/* Estilo para el botón secundario (Registro) */
+.btn-secundario {
+    background: transparent;
+    border: 2px solid #9333ea;
+    color: #9333ea;
+    margin-top: 15px;
+    /* Un poco menos de margen para que queden agrupados */
+}
+
+/* Efecto al pasar el ratón (se rellena de color) */
+.btn-secundario:hover {
+    background: rgba(147, 51, 234, 0.1);
+    /* Un fondo morado muy sutil */
+    color: #6b21a8;
+}
+
 /* FIN DE CSS LOGIN, REGISTRO, CREAR_MASCOTA */
+
 /* CSS DASHBOARD */
+/* --- CONFIGURACIÓN GENERAL --- */
 body {
-    background: linear-gradient(135deg, #5f2c82, #9b59b6);
-    font-family: Arial;
+    background: #0f172a;
+    /* Un tono oscuro más profesional */
+    font-family: 'Segoe UI', sans-serif;
     margin: 0;
     color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
 
 .dashboard {
-    width: 900px;
-    margin: auto;
-    padding: 30px;
+    width: 100%;
+    max-width: 900px;
+    /* Dashboard más ancho */
+    padding: 20px;
 }
 
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
-}
-
-.usuario {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-}
-
-.logout {
-    background: #ff5c8a;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 8px;
-    color: white;
-    cursor: pointer;
-}
-
-.game-container {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 30px;
-    border-radius: 20px;
-}
-
-.mascota {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.mascota-img {
-    font-size: 80px;
-}
-
-.acciones {
-    margin-top: 25px;
-    display: flex;
-    justify-content: space-between;
-}
-
-.acciones button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 10px;
-    background: #9333ea;
-    color: white;
-    cursor: pointer;
-}
-
-/* CONTENEDOR GENERAL */
-
-.estadisticas {
-    margin-top: 30px;
-    width: 100%;
-}
-
-/* CADA ESTADÍSTICA */
-
-.barra {
     margin-bottom: 20px;
 }
 
-.barra label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: #ffffff;
+/* --- CONTENEDOR TIPO CONSOLA --- */
+.game-container {
+    background: #1e293b;
+    padding: 30px;
+    border-radius: 30px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* BARRA VACÍA */
+/* --- ESCENARIO MÁS GRANDE --- */
+.escenario-pet {
+    width: 100%;
+    height: 400px;
+    /* Pantalla mucho más grande */
+    margin: 0 auto 30px auto;
+    border: 8px solid #0f172a;
+    border-radius: 20px;
+
+    /* El fondo completo y bien encuadrado */
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    padding-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+    image-rendering: pixelated;
+}
+
+.mascota-personaje {
+    width: 250px !important;
+    /* Personaje más grande */
+    height: 250px !important;
+    z-index: 2;
+    image-rendering: pixelated;
+    animation: flotar 3s infinite ease-in-out;
+}
+
+@keyframes flotar {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+/* --- ESTADÍSTICAS PERSONALIZADAS POR COLOR --- */
+.estadisticas-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+    background: rgba(15, 23, 42, 0.5); /* Fondo sutil para agrupar stats */
+    padding: 20px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.barra {
+    background: transparent; /* Quitamos el fondo individual para que se vea más limpio */
+    padding: 5px;
+}
+
+.barra label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.8em;
+    font-weight: 600;
+    color: #94a3b8; /* Gris azulado claro para que no canse la vista */
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
 
 .progreso {
     width: 100%;
-    height: 22px;
-    background: #2a2a3f;
-    border-radius: 20px;
+    height: 12px;
+    background: #0f172a; /* Fondo de la barra muy oscuro */
+    border-radius: 50px;
     overflow: hidden;
-    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-/* BARRA LLENA */
+/* COLORES NEÓN PARA LOS STATS (Más contraste con el morado) */
+.barra:nth-child(1) .valor { background: linear-gradient(90deg, #ff8a8a, #f43f5e); } /* Hambre: Rosa/Rojo Neón */
+.barra:nth-child(2) .valor { background: linear-gradient(90deg, #7dd3fc, #0ea5e9); } /* Sueño: Celeste Eléctrico */
+.barra:nth-child(3) .valor { background: linear-gradient(90deg, #4ade80, #22c55e); } /* Diversión: Verde Esmeralda */
+.barra:nth-child(4) .valor { background: linear-gradient(90deg, #c084fc, #a855f7); } /* Higiene: Violeta Brillante */
 
 .valor {
     height: 100%;
-    border-radius: 20px;
-    transition: width 0.4s ease;
-    background: linear-gradient(90deg, #a855f7, #7c3aed);
+    border-radius: 50px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1); /* Brillo sutil */
 }
 
-.barra:nth-child(1) .valor {
-    background: linear-gradient(90deg, #ff7b7b, #ff3b3b);
+/* --- BOTONES DE ACCIÓN --- */
+.acciones {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
 }
 
-.barra:nth-child(2) .valor {
-    background: linear-gradient(90deg, #7bb8ff, #3b7bff);
+.acciones button {
+    padding: 15px 5px;
+    border: none;
+    border-radius: 15px;
+    background: #334155;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #0f172a;
+    transition: all 0.1s;
 }
 
-.barra:nth-child(3) .valor {
-    background: linear-gradient(90deg, #7bffb5, #00d084);
+.acciones button:hover {
+    background: #475569;
 }
 
-.barra:nth-child(4) .valor {
-    background: linear-gradient(90deg, #d37bff, #8a2be2);
+.acciones button:active {
+    transform: translateY(3px);
+    box-shadow: 0 2px 0 #0f172a;
 }
 
-/* CONTROLANDO BARRAS SEGUN VAN BAJANDO */
-
-.valor{
-    height:100%;
-    border-radius:20px;
-    transition: width 0.4s ease;
+.logout {
+    background: #ff6b6b; 
+    border: none;
+    padding: 10px 20px;
+    border-radius: 12px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
 }
 
-/* ESTADO ALTO */
-
-.alto{
-    background: linear-gradient(90deg,#00ff9c,#00c97a);
+.logout:hover {
+    background: #ff5252;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
 }
 
-/* ESTADO MEDIO */
-
-.medio{
-    background: linear-gradient(90deg,#ffe066,#ffb703);
-}
-
-/* ESTADO BAJO */
-
-.bajo{
-    background: linear-gradient(90deg,#ff6b6b,#d90429);
-}
-
-/* FIN DE CSS DASHBOARD */
+/* FIN CSS DASHBOARD */

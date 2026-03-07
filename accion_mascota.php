@@ -75,7 +75,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 hambre = :hambre,
                 sueno = :sueno,
                 diversion = :diversion,
-                higiene = :higiene
+                higiene = :higiene,
+                fecha_ultima_actualizacion = NOW()
                 WHERE id_usuario = :id_usuario";
 
             // Preparamos la consulta de actualización

@@ -9,9 +9,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $color = $_POST["color"];
 
     try {
-
-        $sql = "INSERT INTO mascotas (nombre, id_usuario, hambre, sueno, diversion, higiene, ultima_actualizacion) 
-                VALUES (:nombre, :id_usuario, 100, 100, 100, 100, NOW())";
+        // Añadidos: tipo, color y salud. Valores iniciales a 100
+        $sql = "INSERT INTO mascotas (id_usuario, nombre, tipo, color, hambre, sueno, diversion, higiene, salud, fecha_ultima_actualizacion) 
+                VALUES (:id_usuario, :nombre, :tipo, :color, 100, 100, 100, 100, 100, NOW())";
 
         $consulta_crear_mascota = $bd->prepare($sql);
 
@@ -26,8 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("Location: dashboard.php");
         exit();
     } catch (PDOException $e) {
-
-        echo "Error al crear la mascota";
+        echo "Error al crear la mascota: " . $e->getMessage();
     }
 }
 ?>

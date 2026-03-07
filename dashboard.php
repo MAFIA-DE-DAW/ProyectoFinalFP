@@ -1,263 +1,159 @@
 <?php
-// Incluye el archivo que comprueba que el usuario esté logueado.
-// Si no lo está, normalmente redirige al login.
-require_once "includes/proteger.php";
+// --- 1. SEGURIDAD Y CONEXIÓN ---
+require_once "includes/proteger.php"; // Verifica que el usuario haya iniciado sesión
+require_once "includes/conexion.php"; // Conecta a la base de datos MySQL
 
-// Incluye la conexión a la base de datos (PDO)
-require_once "includes/conexion.php";
-
-
-// CONSULTA PARA OBTENER LA MASCOTA DEL USUARIO LOGUEADO
-
-// Creamos la consulta SQL para buscar la mascota
-// que pertenece al usuario actual (guardado en la sesión)
+// --- 2. OBTENCIÓN DE DATOS DE LA MASCOTA ---
+// Buscamos en la tabla 'mascotas' la fila que coincida con el ID del usuario actual
 $sql = "SELECT * FROM mascotas WHERE id_usuario = :id_usuario";
-
-// Preparamos la consulta para evitar inyección SQL
 $consulta_mascota = $bd->prepare($sql);
+$consulta_mascota->execute([':id_usuario' => $_SESSION["usuario_id"]]);
 
-// Ejecutamos la consulta enviando el id del usuario logueado
-$consulta_mascota->execute([
-    ':id_usuario' => $_SESSION["usuario_id"]
-]);
-
-// Guardamos el resultado de la consulta en un array asociativo
-// Si el usuario no tiene mascota devolverá FALSE
+// Guardamos los datos en la variable $mascota (será un array o 'false' si no tiene)
 $mascota = $consulta_mascota->fetch(PDO::FETCH_ASSOC);
 
-// ===============================
-// SISTEMA DE DEGRADACIÓN
-// ===============================
-
+// --- 3. LÓGICA DE TIEMPO REAL (DEGRADACIÓN) ---
 if ($mascota) {
-
-    // Convertimos la fecha de la BD a timestamp
-    $ultima = strtotime($mascota["ultima_actualizacion"]);
-
-    // Hora actual
+    // Calculamos cuánto tiempo ha pasado desde la última vez que se actualizó la mascota
+    $ultima = strtotime($mascota["fecha_ultima_actualizacion"]);
     $ahora = time();
+    $diferencia_segundos = $ahora - $ultima;
+    $minutos = floor($diferencia_segundos / 60);
 
-    // Calculamos minutos que han pasado
-    $minutos = floor(($ahora - $ultima) / 60);
-
-    // Si ha pasado al menos 1 minuto degradamos
+    // Si ha pasado al menos 1 minuto, bajamos las estadísticas automáticamente
     if ($minutos > 0) {
+        // max(0, ...) asegura que la estadística nunca baje de cero
+        $hambre   = max(0, $mascota["hambre"] - ($minutos * 2));   // Baja 2 puntos por minuto
+        $sueno    = max(0, $mascota["sueno"] - ($minutos * 1));    // Baja 1 punto por minuto
+        $diversion = max(0, $mascota["diversion"] - ($minutos * 2)); // Baja 2 puntos por minuto
+        $higiene   = max(0, $mascota["higiene"] - ($minutos * 1));   // Baja 1 punto por minuto
 
-        // Bajamos estadísticas según el tiempo
-        $hambre = max(0, $mascota["hambre"] - ($minutos * 2));
-        $sueno = max(0, $mascota["sueno"] - ($minutos * 1));
-        $diversion = max(0, $mascota["diversion"] - ($minutos * 2));
-        $higiene = max(0, $mascota["higiene"] - ($minutos * 1));
+        // Guardamos los nuevos valores en la Base de Datos y actualizamos la fecha al momento actual (NOW())
+        $sql_update = "UPDATE mascotas SET 
+                        hambre = :h, sueno = :s, diversion = :d, 
+                        higiene = :hi, fecha_ultima_actualizacion = NOW() 
+                      WHERE id_usuario = :id";
 
-        // Actualizamos la base de datos
-        $sql_update = "UPDATE mascotas SET
-            hambre = :hambre,
-            sueno = :sueno,
-            diversion = :diversion,
-            higiene = :higiene,
-            ultima_actualizacion = NOW()
-            WHERE id_usuario = :id_usuario";
-
-        $consulta_update = $bd->prepare($sql_update);
-
-        $consulta_update->execute([
-            ':hambre' => $hambre,
-            ':sueno' => $sueno,
-            ':diversion' => $diversion,
-            ':higiene' => $higiene,
-            ':id_usuario' => $_SESSION["usuario_id"]
+        $bd->prepare($sql_update)->execute([
+            ':h'  => $hambre,
+            ':s'  => $sueno,
+            ':d'  => $diversion,
+            ':hi' => $higiene,
+            ':id' => $_SESSION["usuario_id"]
         ]);
 
-        // Actualizamos también el array local
+        // Actualizamos los valores en la variable local para que el HTML muestre los datos nuevos
         $mascota["hambre"] = $hambre;
         $mascota["sueno"] = $sueno;
         $mascota["diversion"] = $diversion;
         $mascota["higiene"] = $higiene;
     }
+
+    // --- 4. LÓGICA VISUAL (FONDOS Y SPRITES) ---
+    // Determinamos qué fondo mostrar según el nivel ecológico
+    $nivel_eco = $mascota['nivel_ecologico'] ?? 50; // Si no existe el dato, usamos 50 por defecto
+
+    if ($nivel_eco > 70) {
+        $img_fondo = "fondo_bueno.png"; // Mundo verde y limpio
+    } elseif ($nivel_eco < 30) {
+        $img_fondo = "fondo_malo.png";  // Mundo contaminado
+    } else {
+        $img_fondo = "fondo_normal.png"; // Mundo equilibrado
+    }
+
+    // Construimos el nombre del archivo de la mascota (ej: "planta_verde.png" o "animal_azul.png")
+    $img_mascota = $mascota['tipo'] . "_" . $mascota['color'] . ".png";
 }
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="es">
 
 <head>
-
-    <!-- Título de la página -->
-    <title>EcoGotchi</title>
-
-    <!-- Archivo CSS del proyecto -->
+    <meta charset="UTF-8">
+    <title>Dashboard - EcoGotchi</title>
     <link rel="stylesheet" href="css/styles.css">
-
 </head>
 
 <body>
 
-    <!-- CONTENEDOR PRINCIPAL DEL DASHBOARD -->
     <div class="dashboard">
-
         <header>
-
-            <!-- Título del juego -->
             <h1>🌱 EcoGotchi</h1>
-
             <div class="usuario">
-
-                <!-- Mostramos el nombre del usuario guardado en sesión -->
                 <span>Jugador: <?php echo $_SESSION["usuario_nombre"]; ?></span>
-
-                <!-- Botón para cerrar sesión -->
-                <a href="logout.php">
-                    <button class="logout">Cerrar sesión</button>
-                </a>
-
+                <a href="logout.php" class="logout">Cerrar Sesión</a>
             </div>
-
         </header>
 
-
-        <!-- COMPROBAMOS SI EL USUARIO NO TIENE MASCOTA -->
         <?php if (!$mascota): ?>
-
-            <div class="crear-mascota">
-
-                <h2>No tienes mascota todavía</h2>
-
-                <!-- Botón que lleva a la página para crear mascota -->
+            <div class="crear-mascota" style="text-align:center; padding: 50px;">
+                <h2>¿Aún no tienes un compañero?</h2>
                 <a href="crear_mascota.php">
-                    <button>Crear Mascota</button>
+                    <button class="logout" style="background:#4ade80; color:#064e3b; padding:15px 30px;">Adoptar ahora</button>
                 </a>
-
             </div>
 
-            <!-- SI EL USUARIO YA TIENE MASCOTA SE MUESTRA EL JUEGO -->
         <?php else: ?>
-
             <div class="game-container">
 
-                <!-- INFORMACIÓN DE LA MASCOTA -->
-                <div class="mascota">
+                <div class="escenario-pet" style="background-image: url('img/<?php echo $img_fondo; ?>');">
 
-                    <!-- Mostramos el nombre de la mascota -->
-                    <h2><?php echo $mascota["nombre"]; ?></h2>
-
-                    <!-- Icono o imagen de la mascota -->
-                    <div class="mascota-img">
-                        🐣
-                    </div>
-
+                    <img src="img/<?php echo $img_mascota; ?>"
+                        alt="Mascota"
+                        class="mascota-personaje"
+                        style="<?php echo ($mascota['hambre'] < 20) ? 'filter: grayscale(80%) contrast(0.8);' : ''; ?>">
                 </div>
 
+                <div class="estadisticas-grid">
+                    <?php
+                    $stats = [
+                        'Hambre' => 'hambre',
+                        'Sueño' => 'sueno',
+                        'Diversión' => 'diversion',
+                        'Higiene' => 'higiene'
+                    ];
 
-
-                <!-- BARRAS DE ESTADÍSTICAS -->
-                <div class="estadisticas">
-
-                    <!-- BARRA DE HAMBRE -->
-                    <div class="barra">
-                        <label>Hambre</label>
-                        <div class="progreso">
-
-                            <!-- 
-                            La clase cambia según el nivel:
-                            bajo = rojo
-                            medio = amarillo
-                            alto = verde
-                            -->
-                            <div class="valor 
-            <?php
-            if ($mascota["hambre"] < 40) echo "bajo";
-            elseif ($mascota["hambre"] < 80) echo "medio";
-            else echo "alto";
-            ?>"
-                                style="width: <?php echo $mascota["hambre"]; ?>%">
+                    foreach ($stats as $label => $key):
+                        $val = $mascota[$key];
+                        // Asignamos una clase CSS según el valor para cambiar el color de la barra
+                        $estado = ($val < 40) ? 'bajo' : (($val < 80) ? 'medio' : 'alto');
+                    ?>
+                        <div class="barra">
+                            <label>
+                                <span><?php echo $label; ?></span>
+                                <span><?php echo $val; ?>%</span> </label>
+                            <div class="progreso">
+                                <div class="valor <?php echo $estado; ?>" style="width: <?php echo $val; ?>%"></div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- BARRA DE SUEÑO -->
-                    <div class="barra">
-                        <label>Sueño</label>
-                        <div class="progreso">
-                            <div class="valor 
-            <?php
-            if ($mascota["sueno"] < 40) echo "bajo";
-            elseif ($mascota["sueno"] < 80) echo "medio";
-            else echo "alto";
-            ?>"
-                                style="width: <?php echo $mascota["sueno"]; ?>%">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- BARRA DE DIVERSIÓN -->
-                    <div class="barra">
-                        <label>Diversión</label>
-                        <div class="progreso">
-                            <div class="valor 
-            <?php
-            if ($mascota["diversion"] < 40) echo "bajo";
-            elseif ($mascota["diversion"] < 80) echo "medio";
-            else echo "alto";
-            ?>"
-                                style="width: <?php echo $mascota["diversion"]; ?>%">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- BARRA DE HIGIENE -->
-                    <div class="barra">
-                        <label>Higiene</label>
-                        <div class="progreso">
-                            <div class="valor 
-            <?php
-            if ($mascota["higiene"] < 40) echo "bajo";
-            elseif ($mascota["higiene"] < 80) echo "medio";
-            else echo "alto";
-            ?>"
-                                style="width: <?php echo $mascota["higiene"]; ?>%">
-                            </div>
-                        </div>
-                    </div>
-
+                    <?php endforeach; ?>
                 </div>
 
-
-                <!-- BOTONES DE ACCIONES DEL JUEGO -->
                 <div class="acciones">
-
-                    <!-- Cada botón es un formulario que envía una acción -->
-                    <!-- El valor se envía a accion_mascota.php -->
-
-                    <!-- Alimentar -->
                     <form action="accion_mascota.php" method="POST">
                         <input type="hidden" name="accion" value="alimentar">
-                        <button>🍎 Alimentar</button>
+                        <button>🍎 COMER</button>
                     </form>
 
-                    <!-- Dormir -->
                     <form action="accion_mascota.php" method="POST">
                         <input type="hidden" name="accion" value="dormir">
-                        <button>😴 Dormir</button>
+                        <button>😴 DORMIR</button>
                     </form>
 
-                    <!-- Jugar -->
                     <form action="accion_mascota.php" method="POST">
                         <input type="hidden" name="accion" value="jugar">
-                        <button>🎾 Jugar</button>
+                        <button>🎾 JUGAR</button>
                     </form>
 
-                    <!-- Limpiar -->
                     <form action="accion_mascota.php" method="POST">
                         <input type="hidden" name="accion" value="limpiar">
-                        <button>🛁 Limpiar</button>
+                        <button>🛁 LIMPIAR</button>
                     </form>
-
                 </div>
 
             </div>
-
         <?php endif; ?>
-
     </div>
 
 </body>

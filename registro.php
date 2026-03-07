@@ -11,7 +11,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
     try {
-
         // Comprobar si el email ya existe
         $sql_comprobar = "SELECT id FROM usuarios WHERE email = :email";
         $consulta_email = $bd->prepare($sql_comprobar);
@@ -21,14 +20,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Si encuentra algún resultado
         if ($consulta_email->rowCount() > 0) {
-
             echo "Este email ya está registrado";
         } else {
-
             // Insertar usuario
             $sql_insertar = "INSERT INTO usuarios (nombre, email, password) 
                              VALUES (:nombre, :email, :password)";
-
             $consulta_insertar = $bd->prepare($sql_insertar);
 
             $consulta_insertar->execute([
@@ -37,10 +33,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 ':password' => $password_hash
             ]);
 
-            echo "Usuario registrado correctamente";
+            // REDIRECCIÓN AUTOMÁTICA AL LOGIN
+            header("Location: login.php");
+            exit();
         }
     } catch (PDOException $e) {
-
         echo "Error al registrar usuario";
     }
 }
@@ -50,7 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html>
 
 <head>
-    <title>Registro</title>
+    <title>Registro - EcoGotchi</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 
@@ -61,7 +58,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <h2>Crear cuenta</h2>
 
         <form method="POST">
-
             <label>Nombre</label>
             <input type="text" name="nombre" required>
 
@@ -72,8 +68,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="password" name="password" required>
 
             <button type="submit">Registrarse</button>
-
         </form>
+
+        <button type="button" class="btn-secundario" onclick="window.location.href='login.php'">
+            Ya tengo una cuenta
+        </button>
 
     </div>
 

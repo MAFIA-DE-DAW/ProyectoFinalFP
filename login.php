@@ -75,6 +75,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <button type="submit">Entrar</button>
 
         </form>
+        <button type="button" class="btn-secundario" onclick="window.location.href='registro.php'">
+            Crear cuenta nueva
+        </button>
 
     </div>
 
