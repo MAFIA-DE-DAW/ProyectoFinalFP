@@ -117,8 +117,12 @@ if ($mascota) {
 
         <?php else: ?>
             <div class="game-container">
-
+                
                 <div class="escenario-pet" style="background-image: url('img/<?php echo $img_fondo; ?>');">
+
+                    <div class="cartel-nombre">
+                        <?php echo htmlspecialchars($mascota["nombre"]); ?>
+                    </div>
 
                     <img src="img/<?php echo $img_mascota; ?>"
                         alt="Mascota"
