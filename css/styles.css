@@ -163,7 +163,7 @@ header {
 }
 
 /* cartel del nombre */
-.cartel-nombre{
+.cartel-nombre {
     position: absolute;
     top: 28px;
     left: 44%;
@@ -178,14 +178,22 @@ header {
     font-size: 18px;
 
     border: 3px solid #4ade80;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     animation: flotar 3s ease-in-out infinite;
 }
 
-@keyframes flotar{
-    0%{ transform: translate(-50%,0); }
-    50%{ transform: translate(-50%,-5px); }
-    100%{ transform: translate(-50%,0); }
+@keyframes flotar {
+    0% {
+        transform: translate(-50%, 0);
+    }
+
+    50% {
+        transform: translate(-50%, -5px);
+    }
+
+    100% {
+        transform: translate(-50%, 0);
+    }
 }
 
 .mascota-personaje {
@@ -209,20 +217,39 @@ header {
     }
 }
 
+.bocadillo {
+    position: absolute;
+    top: 84px;
+    left: 70%;
+    transform: translateX(-50%);
+
+    background: white;
+    color: #064e3b;
+    padding: 10px 15px;
+    border-radius: 12px;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
 /* --- ESTADÍSTICAS PERSONALIZADAS POR COLOR --- */
 .estadisticas-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
     margin-bottom: 30px;
-    background: rgba(15, 23, 42, 0.5); /* Fondo sutil para agrupar stats */
+    background: rgba(15, 23, 42, 0.5);
+    /* Fondo sutil para agrupar stats */
     padding: 20px;
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .barra {
-    background: transparent; /* Quitamos el fondo individual para que se vea más limpio */
+    background: transparent;
+    /* Quitamos el fondo individual para que se vea más limpio */
     padding: 5px;
 }
 
@@ -232,7 +259,8 @@ header {
     margin-bottom: 8px;
     font-size: 0.8em;
     font-weight: 600;
-    color: #94a3b8; /* Gris azulado claro para que no canse la vista */
+    color: #94a3b8;
+    /* Gris azulado claro para que no canse la vista */
     text-transform: uppercase;
     letter-spacing: 1.5px;
 }
@@ -240,7 +268,8 @@ header {
 .progreso {
     width: 100%;
     height: 12px;
-    background: #0f172a; /* Fondo de la barra muy oscuro */
+    background: #0f172a;
+    /* Fondo de la barra muy oscuro */
     border-radius: 50px;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -248,15 +277,32 @@ header {
 }
 
 /* COLORES NEÓN PARA LOS STATS (Más contraste con el morado) */
-.barra:nth-child(1) .valor { background: linear-gradient(90deg, #ff8a8a, #f43f5e); } /* Hambre: Rosa/Rojo Neón */
-.barra:nth-child(2) .valor { background: linear-gradient(90deg, #7dd3fc, #0ea5e9); } /* Sueño: Celeste Eléctrico */
-.barra:nth-child(3) .valor { background: linear-gradient(90deg, #4ade80, #22c55e); } /* Diversión: Verde Esmeralda */
-.barra:nth-child(4) .valor { background: linear-gradient(90deg, #c084fc, #a855f7); } /* Higiene: Violeta Brillante */
+.barra:nth-child(1) .valor {
+    background: linear-gradient(90deg, #ff8a8a, #f43f5e);
+}
+
+/* Hambre: Rosa/Rojo Neón */
+.barra:nth-child(2) .valor {
+    background: linear-gradient(90deg, #7dd3fc, #0ea5e9);
+}
+
+/* Sueño: Celeste Eléctrico */
+.barra:nth-child(3) .valor {
+    background: linear-gradient(90deg, #4ade80, #22c55e);
+}
+
+/* Diversión: Verde Esmeralda */
+.barra:nth-child(4) .valor {
+    background: linear-gradient(90deg, #c084fc, #a855f7);
+}
+
+/* Higiene: Violeta Brillante */
 
 .valor {
     height: 100%;
     border-radius: 50px;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1); /* Brillo sutil */
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    /* Brillo sutil */
 }
 
 /* --- BOTONES DE ACCIÓN --- */
@@ -288,7 +334,7 @@ header {
 }
 
 .logout {
-    background: #ff6b6b; 
+    background: #ff6b6b;
     border: none;
     padding: 10px 20px;
     border-radius: 12px;

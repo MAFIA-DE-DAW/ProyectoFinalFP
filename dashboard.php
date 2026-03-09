@@ -99,6 +99,7 @@ if ($mascota) {
 <body>
 
     <div class="dashboard">
+        <!-- CABECERA DEL JUEGO -->
         <header>
             <h1>🌱 EcoGotchi</h1>
             <div class="usuario">
@@ -107,6 +108,7 @@ if ($mascota) {
             </div>
         </header>
 
+        <!-- EN CASO DE NO TERNER MASCOTA, LA CREAMOS -->
         <?php if (!$mascota): ?>
             <div class="crear-mascota" style="text-align:center; padding: 50px;">
                 <h2>¿Aún no tienes un compañero?</h2>
@@ -115,21 +117,55 @@ if ($mascota) {
                 </a>
             </div>
 
+            <!-- EN CASO DE TENER MASCOTA LA MOSTRAMOS -->
         <?php else: ?>
+
+            <!-- CONTENEDOR DEL JUEGO -->
             <div class="game-container">
-                
+
+                <!-- CARGAMOS FONDO -->
                 <div class="escenario-pet" style="background-image: url('img/<?php echo $img_fondo; ?>');">
 
+                    <!-- CARTEL CON EL NOMBRE -->
                     <div class="cartel-nombre">
                         <?php echo htmlspecialchars($mascota["nombre"]); ?>
                     </div>
 
+                    <!-- BOCADILLO DE LA MASCOTA -->
+                    <?php
+                    $mensaje = "";
+
+                    if ($mascota["hambre"] < 30) {
+                        $mensaje = "Tengo hambre 🍎";
+                    } elseif ($mascota["sueno"] < 30) {
+                        $mensaje = "Tengo sueño 😴";
+                    } elseif ($mascota["diversion"] < 30) {
+                        $mensaje = "Quiero jugar 🎾";
+                    } elseif ($mascota["higiene"] < 30) {
+                        $mensaje = "Estoy sucio 🛁";
+                    }
+                    ?>
+
+                    <?php if ($mensaje != ""): ?>
+                        <div class="bocadillo">
+                            <?php echo $mensaje; ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- MASCOTA (IMAGEN) -->
                     <img src="img/<?php echo $img_mascota; ?>"
                         alt="Mascota"
                         class="mascota-personaje"
-                        style="<?php echo ($mascota['hambre'] < 20) ? 'filter: grayscale(80%) contrast(0.8);' : ''; ?>">
+                        style="<?php
+                                $filtro = "";
+                                if ($mascota["hambre"] < 20 || $mascota["sueno"] < 20) {
+                                    $filtro = "filter: grayscale(80%) contrast(0.8);";
+                                } elseif ($mascota["diversion"] > 80) {
+                                    $filtro = "filter: brightness(1.2);";
+                                }
+                                ?>">
                 </div>
-
+                <!-- ESTADISTICAS Y BARRAS -->
                 <div class="estadisticas-grid">
                     <?php
                     $stats = [
@@ -154,7 +190,7 @@ if ($mascota) {
                         </div>
                     <?php endforeach; ?>
                 </div>
-
+                <!-- ACCIONES -->
                 <div class="acciones">
                     <form action="accion_mascota.php" method="POST">
                         <input type="hidden" name="accion" value="alimentar">
