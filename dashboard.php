@@ -79,6 +79,40 @@ if ($mascota) {
     // Construimos el nombre del archivo de la mascota (ej: "planta_verde.png" o "animal_azul.png")
     $img_mascota = $mascota['tipo'] . "_" . $mascota['color'] . ".png";
 }
+// API DEL TIEMPO
+$apiKey = "2b38874df3e4f0aab602b288b36e2fe2";
+$ciudad = "Madrid";
+
+$url = "https://api.openweathermap.org/data/2.5/weather?q=$ciudad&appid=$apiKey&units=metric&lang=es";
+
+$respuesta = file_get_contents($url);
+$datos = json_decode($respuesta, true);
+
+$clima = $datos["weather"][0]["main"];
+
+$clase_clima = "";
+
+switch ($clima) {
+
+    case "Clear":
+        $clase_clima = "clima-sol";
+        break;
+
+    case "Rain":
+        $clase_clima = "clima-lluvia";
+        break;
+
+    case "Clouds":
+        $clase_clima = "clima-nubes";
+        break;
+
+    case "Thunderstorm":
+        $clase_clima = "clima-tormenta";
+        break;
+
+    default:
+        $clase_clima = "clima-normal";
+}
 ?>
 
 <?php if (isset($_GET["mascota"]) && $_GET["mascota"] == "muerta"): ?>
@@ -124,7 +158,10 @@ if ($mascota) {
             <div class="game-container">
 
                 <!-- CARGAMOS FONDO -->
-                <div class="escenario-pet" style="background-image: url('img/<?php echo $img_fondo; ?>');">
+                <div class="escenario-pet <?php echo $clase_clima; ?>"
+                    style="background-image: url('img/<?php echo $img_fondo; ?>');">
+
+                    <div class="clima-overlay"></div>
 
                     <!-- CARTEL CON EL NOMBRE -->
                     <div class="cartel-nombre">
@@ -165,57 +202,58 @@ if ($mascota) {
                                 }
                                 ?>">
                 </div>
-                <!-- ESTADISTICAS Y BARRAS -->
-                <div class="estadisticas-grid">
-                    <?php
-                    $stats = [
-                        'Hambre' => 'hambre',
-                        'Sueño' => 'sueno',
-                        'Diversión' => 'diversion',
-                        'Higiene' => 'higiene'
-                    ];
-
-                    foreach ($stats as $label => $key):
-                        $val = $mascota[$key];
-                        // Asignamos una clase CSS según el valor para cambiar el color de la barra
-                        $estado = ($val < 40) ? 'bajo' : (($val < 80) ? 'medio' : 'alto');
-                    ?>
-                        <div class="barra">
-                            <label>
-                                <span><?php echo $label; ?></span>
-                                <span><?php echo $val; ?>%</span> </label>
-                            <div class="progreso">
-                                <div class="valor <?php echo $estado; ?>" style="width: <?php echo $val; ?>%"></div>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-                <!-- ACCIONES -->
-                <div class="acciones">
-                    <form action="accion_mascota.php" method="POST">
-                        <input type="hidden" name="accion" value="alimentar">
-                        <button>🍎 COMER</button>
-                    </form>
-
-                    <form action="accion_mascota.php" method="POST">
-                        <input type="hidden" name="accion" value="dormir">
-                        <button>😴 DORMIR</button>
-                    </form>
-
-                    <form action="accion_mascota.php" method="POST">
-                        <input type="hidden" name="accion" value="jugar">
-                        <button>🎾 JUGAR</button>
-                    </form>
-
-                    <form action="accion_mascota.php" method="POST">
-                        <input type="hidden" name="accion" value="limpiar">
-                        <button>🛁 LIMPIAR</button>
-                    </form>
-                </div>
-
             </div>
-        <?php endif; ?>
+            <!-- ESTADISTICAS Y BARRAS -->
+            <div class="estadisticas-grid">
+                <?php
+                $stats = [
+                    'Hambre' => 'hambre',
+                    'Sueño' => 'sueno',
+                    'Diversión' => 'diversion',
+                    'Higiene' => 'higiene'
+                ];
+
+                foreach ($stats as $label => $key):
+                    $val = $mascota[$key];
+                    // Asignamos una clase CSS según el valor para cambiar el color de la barra
+                    $estado = ($val < 40) ? 'bajo' : (($val < 80) ? 'medio' : 'alto');
+                ?>
+                    <div class="barra">
+                        <label>
+                            <span><?php echo $label; ?></span>
+                            <span><?php echo $val; ?>%</span> </label>
+                        <div class="progreso">
+                            <div class="valor <?php echo $estado; ?>" style="width: <?php echo $val; ?>%"></div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+            <!-- ACCIONES -->
+            <div class="acciones">
+                <form action="accion_mascota.php" method="POST">
+                    <input type="hidden" name="accion" value="alimentar">
+                    <button>🍎 COMER</button>
+                </form>
+
+                <form action="accion_mascota.php" method="POST">
+                    <input type="hidden" name="accion" value="dormir">
+                    <button>😴 DORMIR</button>
+                </form>
+
+                <form action="accion_mascota.php" method="POST">
+                    <input type="hidden" name="accion" value="jugar">
+                    <button>🎾 JUGAR</button>
+                </form>
+
+                <form action="accion_mascota.php" method="POST">
+                    <input type="hidden" name="accion" value="limpiar">
+                    <button>🛁 LIMPIAR</button>
+                </form>
+            </div>
+
     </div>
+<?php endif; ?>
+</div>
 
 </body>
 

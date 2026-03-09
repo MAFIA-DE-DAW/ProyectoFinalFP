@@ -147,6 +147,7 @@ header {
     margin: 0 auto 30px auto;
     border: 8px solid #0f172a;
     border-radius: 20px;
+    overflow: hidden; /* evita que el clima salga */
 
     /* El fondo completo y bien encuadrado */
     background-size: 100% 100%;
@@ -160,6 +161,15 @@ header {
     position: relative;
     overflow: hidden;
     image-rendering: pixelated;
+}
+
+.clima-overlay{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    pointer-events:none;
 }
 
 /* cartel del nombre */
@@ -203,6 +213,7 @@ header {
     z-index: 2;
     image-rendering: pixelated;
     animation: flotar 3s infinite ease-in-out;
+    
 }
 
 @keyframes flotar {
@@ -353,6 +364,90 @@ header {
     background: #ff5252;
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+
+/* ANIMACIÓN LLUVIA */
+.clima-lluvia .clima-overlay::before{
+content:"";
+position:absolute;
+width:100%;
+height:100%;
+
+background-image: repeating-linear-gradient(
+transparent,
+transparent 8px,
+rgba(255,255,255,0.4) 10px
+);
+
+animation: lluvia 0.5s linear infinite;
+}
+
+@keyframes lluvia{
+from{
+transform: translateY(-30px);
+}
+to{
+transform: translateY(30px);
+}
+}
+
+/* ANIMACIÓN SOL */
+
+.clima-sol .clima-overlay::before{
+content:"☀️";
+position:absolute;
+
+top:20px;
+right:20px;
+font-size:50px;
+
+animation: sol 4s ease-in-out infinite;
+}
+
+@keyframes sol{
+0%{ transform:scale(1);}
+50%{ transform:scale(1.2);}
+100%{ transform:scale(1);}
+}
+
+/* ANIMACIÓN NUBES */
+.clima-nubes::after{
+content:"☁️ ☁️ ☁️";
+position:absolute;
+top:20px;
+left:-200px;
+font-size:40px;
+
+animation: nubes 20s linear infinite;
+}
+
+@keyframes nubes{
+from{
+transform: translateX(0);
+}
+to{
+transform: translateX(1200px);
+}
+}
+
+/* ANIMACIÓN VIENTO */
+.clima-viento::after{
+content:"🍃 🍃 🍃";
+position:absolute;
+top:40%;
+left:-200px;
+font-size:30px;
+
+animation: viento 8s linear infinite;
+}
+
+@keyframes viento{
+from{
+transform: translateX(0);
+}
+to{
+transform: translateX(1400px);
+}
 }
 
 /* FIN CSS DASHBOARD */
