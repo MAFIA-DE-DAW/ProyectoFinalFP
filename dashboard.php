@@ -28,6 +28,20 @@ if ($mascota) {
         $diversion = max(0, $mascota["diversion"] - ($minutos * 2)); // Baja 2 puntos por minuto
         $higiene   = max(0, $mascota["higiene"] - ($minutos * 1));   // Baja 1 punto por minuto
 
+        // --- COMPROBAR SI LA MASCOTA MUERE ---
+        if ($hambre == 0 || $sueno == 0 || $diversion == 0 || $higiene == 0) {
+
+            // Eliminamos la mascota de la base de datos
+            $sql_muerte = "DELETE FROM mascotas WHERE id_usuario = :id";
+            $bd->prepare($sql_muerte)->execute([
+                ':id' => $_SESSION["usuario_id"]
+            ]);
+
+            // Redirigimos para que aparezca la opción de crear otra
+            header("Location: dashboard.php?mascota=muerta");
+            exit;
+        }
+
         // Guardamos los nuevos valores en la Base de Datos y actualizamos la fecha al momento actual (NOW())
         $sql_update = "UPDATE mascotas SET 
                         hambre = :h, sueno = :s, diversion = :d, 
@@ -49,6 +63,7 @@ if ($mascota) {
         $mascota["higiene"] = $higiene;
     }
 
+
     // --- 4. LÓGICA VISUAL (FONDOS Y SPRITES) ---
     // Determinamos qué fondo mostrar según el nivel ecológico
     $nivel_eco = $mascota['nivel_ecologico'] ?? 50; // Si no existe el dato, usamos 50 por defecto
@@ -65,6 +80,12 @@ if ($mascota) {
     $img_mascota = $mascota['tipo'] . "_" . $mascota['color'] . ".png";
 }
 ?>
+
+<?php if (isset($_GET["mascota"]) && $_GET["mascota"] == "muerta"): ?>
+    <div style="background:#6b21a8;padding:15px;text-align:center;">
+        💀 Tu mascota murió por falta de cuidados.
+    </div>
+<?php endif; ?>
 
 <!DOCTYPE html>
 <html lang="es">
