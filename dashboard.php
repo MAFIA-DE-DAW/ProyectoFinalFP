@@ -12,6 +12,32 @@ $consulta_mascota->execute([':id_usuario' => $_SESSION["usuario_id"]]);
 // Guardamos los datos en la variable $mascota (será un array o 'false' si no tiene)
 $mascota = $consulta_mascota->fetch(PDO::FETCH_ASSOC);
 
+// --- 2.1. ENTORNO ECOLOGICO ---
+
+$sql_entorno = "SELECT * FROM entorno WHERE id_usuario = :id";
+$consulta_entorno = $bd->prepare($sql_entorno);
+$consulta_entorno->execute([
+    ':id' => $_SESSION["usuario_id"]
+]);
+
+$entorno = $consulta_entorno->fetch(PDO::FETCH_ASSOC);
+
+// Si el usuario aún no tiene entorno, lo creamos
+if (!$entorno) {
+
+    $sql_crear = "INSERT INTO entorno (id_usuario,nivel_ecologico,estado_entorno)
+VALUES (:id,50,'normal')";
+
+    $bd->prepare($sql_crear)->execute([
+        ':id' => $_SESSION["usuario_id"]
+    ]);
+
+    $entorno = [
+        "nivel_ecologico" => 50,
+        "estado_entorno" => "normal"
+    ];
+}
+
 // --- 3. LÓGICA DE TIEMPO REAL (DEGRADACIÓN) ---
 if ($mascota) {
     // Calculamos cuánto tiempo ha pasado desde la última vez que se actualizó la mascota
@@ -66,14 +92,28 @@ if ($mascota) {
 
     // --- 4. LÓGICA VISUAL (FONDOS Y SPRITES) ---
     // Determinamos qué fondo mostrar según el nivel ecológico
-    $nivel_eco = $mascota['nivel_ecologico'] ?? 50; // Si no existe el dato, usamos 50 por defecto
+    $nivel_eco = $entorno['nivel_ecologico'];
 
     if ($nivel_eco > 70) {
-        $img_fondo = "fondo_bueno.png"; // Mundo verde y limpio
+        $estado_entorno = "verde";
     } elseif ($nivel_eco < 30) {
-        $img_fondo = "fondo_malo.png";  // Mundo contaminado
+        $estado_entorno = "contaminado";
     } else {
-        $img_fondo = "fondo_normal.png"; // Mundo equilibrado
+        $estado_entorno = "normal";
+    }
+
+    switch ($estado_entorno) {
+
+        case "verde":
+            $img_fondo = "fondo_bueno.png";
+            break;
+
+        case "contaminado":
+            $img_fondo = "fondo_malo.png";
+            break;
+
+        default:
+            $img_fondo = "fondo_normal.png";
     }
 
     // Construimos el nombre del archivo de la mascota (ej: "planta_verde.png" o "animal_azul.png")
@@ -113,9 +153,8 @@ switch ($clima) {
     default:
         $clase_clima = "clima-normal";
 }
-?>
-
-<?php if (isset($_GET["mascota"]) && $_GET["mascota"] == "muerta"): ?>
+// Aviso por muerte
+if (isset($_GET["mascota"]) && $_GET["mascota"] == "muerta"): ?>
     <div style="background:#6b21a8;padding:15px;text-align:center;">
         💀 Tu mascota murió por falta de cuidados.
     </div>
@@ -158,7 +197,7 @@ switch ($clima) {
             <div class="game-container">
 
                 <!-- CARGAMOS FONDO -->
-                <div class="escenario-pet <?php echo $clase_clima; ?>"
+                <div class="escenario-pet <?php echo $clase_clima; ?> estado-<?php echo $estado_entorno; ?>"
                     style="background-image: url('img/<?php echo $img_fondo; ?>');">
 
                     <div class="clima-overlay"></div>
@@ -203,8 +242,19 @@ switch ($clima) {
                                 ?>">
                 </div>
             </div>
+            <!-- CARGAMOS ECO BARRA -->
+            <div class="eco-barra">
+
+                <h2>🌍 ECO BARRA</h2>
+                <div class="barra-eco">
+                    <div class="nivel brillo" style="width:<?php echo $nivel_eco ?>%"></div>
+                </div>
+
+            </div>
+
             <!-- ESTADISTICAS Y BARRAS -->
             <div class="estadisticas-grid">
+
                 <?php
                 $stats = [
                     'Hambre' => 'hambre',
@@ -218,6 +268,7 @@ switch ($clima) {
                     // Asignamos una clase CSS según el valor para cambiar el color de la barra
                     $estado = ($val < 40) ? 'bajo' : (($val < 80) ? 'medio' : 'alto');
                 ?>
+
                     <div class="barra">
                         <label>
                             <span><?php echo $label; ?></span>
