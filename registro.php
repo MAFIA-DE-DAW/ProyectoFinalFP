@@ -51,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="css/styles.css">
 </head>
 
-<body>
+<body class="login">
 
     <div class="form-container">
 

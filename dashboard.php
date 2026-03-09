@@ -2,7 +2,8 @@
 // --- 1. SEGURIDAD Y CONEXIÓN ---
 require_once "includes/proteger.php"; // Verifica que el usuario haya iniciado sesión
 require_once "includes/conexion.php"; // Conecta a la base de datos MySQL
-
+// CREAR VARIABLE DEL USUARIO
+$id_usuario = $_SESSION["usuario_id"];
 // --- 2. OBTENCIÓN DE DATOS DE LA MASCOTA ---
 // Buscamos en la tabla 'mascotas' la fila que coincida con el ID del usuario actual
 $sql = "SELECT * FROM mascotas WHERE id_usuario = :id_usuario";
@@ -11,6 +12,38 @@ $consulta_mascota->execute([':id_usuario' => $_SESSION["usuario_id"]]);
 
 // Guardamos los datos en la variable $mascota (será un array o 'false' si no tiene)
 $mascota = $consulta_mascota->fetch(PDO::FETCH_ASSOC);
+
+// comprobar si hizo misiones hoy //
+
+$sql_check = "
+SELECT COUNT(*) 
+FROM misiones_completadas
+WHERE id_usuario = :usuario
+AND DATE(fecha) = CURDATE()
+";
+
+$consulta_check = $bd->prepare($sql_check);
+$consulta_check->execute([
+    ":usuario" => $id_usuario
+]);
+
+$misiones_hoy = $consulta_check->fetchColumn();
+
+
+// si no hizo misiones, bajar eco //
+
+if ($misiones_hoy == 0) {
+
+    $sql_bajar = "
+UPDATE entorno
+SET nivel_ecologico = GREATEST(0, nivel_ecologico - 5)
+WHERE id_usuario = :usuario
+";
+
+    $bd->prepare($sql_bajar)->execute([
+        ":usuario" => $id_usuario
+    ]);
+}
 
 // --- 2.1. ENTORNO ECOLOGICO ---
 
@@ -118,7 +151,83 @@ if ($mascota) {
 
     // Construimos el nombre del archivo de la mascota (ej: "planta_verde.png" o "animal_azul.png")
     $img_mascota = $mascota['tipo'] . "_" . $mascota['color'] . ".png";
+    
+    // --- MENSAJES DE LA MASCOTA (BOCADILLO) ---
+
+    $mensaje = "";
+
+    if ($mascota) {
+
+        if ($mascota["hambre"] < 30) {
+
+            $mensajes = [
+                "¡Tengo mucha hambre! 🍎",
+                "Mi barriga ruge... 🍔",
+                "¿Me das algo de comer?"
+            ];
+
+            $mensaje = $mensajes[array_rand($mensajes)];
+        } elseif ($mascota["sueno"] < 30) {
+
+            $mensajes = [
+                "Tengo mucho sueño... 😴",
+                "Necesito dormir un poco",
+                "Estoy muy cansado..."
+            ];
+
+            $mensaje = $mensajes[array_rand($mensajes)];
+        } elseif ($mascota["diversion"] < 30) {
+
+            $mensajes = [
+                "¡Quiero jugar! 🎾",
+                "Estoy aburrido...",
+                "¿Jugamos un rato?"
+            ];
+
+            $mensaje = $mensajes[array_rand($mensajes)];
+        } elseif ($mascota["higiene"] < 30) {
+
+            $mensajes = [
+                "Necesito un baño 🛁",
+                "Estoy muy sucio...",
+                "Hora de limpiarme"
+            ];
+
+            $mensaje = $mensajes[array_rand($mensajes)];
+        } else {
+
+            $mensajes = [
+                "¡Estoy genial! 🌱",
+                "Me siento muy bien hoy",
+                "Gracias por cuidarme"
+            ];
+
+            $mensaje = $mensajes[array_rand($mensajes)];
+        }
+    }
 }
+//MISIONES (MOSTRAR SOLO MISIONES NO COMPLETADAS HOY)
+
+$sql_misiones = "
+SELECT *
+FROM misiones
+WHERE id NOT IN (
+    SELECT id_mision
+    FROM misiones_completadas
+    WHERE id_usuario = :usuario
+    AND DATE(fecha) = CURDATE()
+)
+ORDER BY RAND()
+LIMIT 3
+";
+
+$consulta = $bd->prepare($sql_misiones);
+$consulta->execute([
+    ":usuario" => $_SESSION["usuario_id"]
+]);
+
+$misiones = $consulta->fetchAll(PDO::FETCH_ASSOC);
+
 // API DEL TIEMPO
 $apiKey = "2b38874df3e4f0aab602b288b36e2fe2";
 $ciudad = "Madrid";
@@ -169,143 +278,199 @@ if (isset($_GET["mascota"]) && $_GET["mascota"] == "muerta"): ?>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 
-<body>
+<body class="dashboard-body">
 
     <div class="dashboard">
+
         <!-- CABECERA DEL JUEGO -->
         <header>
             <h1>🌱 EcoGotchi</h1>
+
             <div class="usuario">
                 <span>Jugador: <?php echo $_SESSION["usuario_nombre"]; ?></span>
                 <a href="logout.php" class="logout">Cerrar Sesión</a>
             </div>
         </header>
 
-        <!-- EN CASO DE NO TERNER MASCOTA, LA CREAMOS -->
-        <?php if (!$mascota): ?>
-            <div class="crear-mascota" style="text-align:center; padding: 50px;">
-                <h2>¿Aún no tienes un compañero?</h2>
-                <a href="crear_mascota.php">
-                    <button class="logout" style="background:#4ade80; color:#064e3b; padding:15px 30px;">Adoptar ahora</button>
-                </a>
-            </div>
+        <div class="layout-juego">
 
-            <!-- EN CASO DE TENER MASCOTA LA MOSTRAMOS -->
-        <?php else: ?>
+            <!-- EN CASO DE NO TENER MASCOTA, LA CREAMOS -->
+            <?php if (!$mascota): ?>
 
-            <!-- CONTENEDOR DEL JUEGO -->
-            <div class="game-container">
+                <div class="crear-mascota" style="text-align:center; padding: 50px;">
 
-                <!-- CARGAMOS FONDO -->
-                <div class="escenario-pet <?php echo $clase_clima; ?> estado-<?php echo $estado_entorno; ?>"
-                    style="background-image: url('img/<?php echo $img_fondo; ?>');">
+                    <h2>¿Aún no tienes un compañero?</h2>
 
-                    <div class="clima-overlay"></div>
+                    <a href="crear_mascota.php">
+                        <button class="logout" style="background:#4ade80; color:#064e3b; padding:15px 30px;">
+                            Adoptar ahora
+                        </button>
+                    </a>
 
-                    <!-- CARTEL CON EL NOMBRE -->
-                    <div class="cartel-nombre">
-                        <?php echo htmlspecialchars($mascota["nombre"]); ?>
-                    </div>
-
-                    <!-- BOCADILLO DE LA MASCOTA -->
-                    <?php
-                    $mensaje = "";
-
-                    if ($mascota["hambre"] < 30) {
-                        $mensaje = "Tengo hambre 🍎";
-                    } elseif ($mascota["sueno"] < 30) {
-                        $mensaje = "Tengo sueño 😴";
-                    } elseif ($mascota["diversion"] < 30) {
-                        $mensaje = "Quiero jugar 🎾";
-                    } elseif ($mascota["higiene"] < 30) {
-                        $mensaje = "Estoy sucio 🛁";
-                    }
-                    ?>
-
-                    <?php if ($mensaje != ""): ?>
-                        <div class="bocadillo">
-                            <?php echo $mensaje; ?>
-                        </div>
-                    <?php endif; ?>
-
-                    <!-- MASCOTA (IMAGEN) -->
-                    <img src="img/<?php echo $img_mascota; ?>"
-                        alt="Mascota"
-                        class="mascota-personaje"
-                        style="<?php
-                                $filtro = "";
-                                if ($mascota["hambre"] < 20 || $mascota["sueno"] < 20) {
-                                    $filtro = "filter: grayscale(80%) contrast(0.8);";
-                                } elseif ($mascota["diversion"] > 80) {
-                                    $filtro = "filter: brightness(1.2);";
-                                }
-                                ?>">
-                </div>
-            </div>
-            <!-- CARGAMOS ECO BARRA -->
-            <div class="eco-barra">
-
-                <h2>🌍 ECO BARRA</h2>
-                <div class="barra-eco">
-                    <div class="nivel brillo" style="width:<?php echo $nivel_eco ?>%"></div>
                 </div>
 
-            </div>
+                <!-- EN CASO DE TENER MASCOTA LA MOSTRAMOS -->
+            <?php else: ?>
 
-            <!-- ESTADISTICAS Y BARRAS -->
-            <div class="estadisticas-grid">
+                <div class="layout-principal">
 
-                <?php
-                $stats = [
-                    'Hambre' => 'hambre',
-                    'Sueño' => 'sueno',
-                    'Diversión' => 'diversion',
-                    'Higiene' => 'higiene'
-                ];
+                    <!-- COLUMNA IZQUIERDA -->
+                    <div class="columna-juego">
 
-                foreach ($stats as $label => $key):
-                    $val = $mascota[$key];
-                    // Asignamos una clase CSS según el valor para cambiar el color de la barra
-                    $estado = ($val < 40) ? 'bajo' : (($val < 80) ? 'medio' : 'alto');
-                ?>
 
-                    <div class="barra">
-                        <label>
-                            <span><?php echo $label; ?></span>
-                            <span><?php echo $val; ?>%</span> </label>
-                        <div class="progreso">
-                            <div class="valor <?php echo $estado; ?>" style="width: <?php echo $val; ?>%"></div>
+                        <!-- ZONA JUEGO -->
+                        <div class="zona-juego">
+
+                            <div class="game-container">
+
+                                <!-- ESCENARIO DE LA MASCOTA -->
+                                <div class="escenario-pet <?php echo $clase_clima; ?> estado-<?php echo $estado_entorno; ?>"
+                                    style="background-image: url('img/<?php echo $img_fondo; ?>');">
+
+                                    <div class="clima-overlay"></div>
+
+                                    <!-- CARTEL NOMBRE -->
+                                    <div class="cartel-nombre">
+                                        <?php echo htmlspecialchars($mascota["nombre"]); ?>
+                                    </div>
+
+                                    <!-- BOCADILLO -->
+                                    <?php if (!empty($mensaje)): ?>
+
+                                        <div class="bocadillo">
+                                            <?php echo $mensaje; ?>
+                                        </div>
+
+                                    <?php endif; ?>
+
+                                    <!-- MASCOTA -->
+                                    <img src="img/<?php echo $img_mascota; ?>"
+                                        alt="Mascota"
+                                        class="mascota-personaje">
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- ACCIONES -->
+                            <div class="acciones">
+
+                                <form action="accion_mascota.php" method="POST">
+                                    <input type="hidden" name="accion" value="alimentar">
+                                    <button>🍎 COMER</button>
+                                </form>
+
+                                <form action="accion_mascota.php" method="POST">
+                                    <input type="hidden" name="accion" value="dormir">
+                                    <button>😴 DORMIR</button>
+                                </form>
+
+                                <form action="accion_mascota.php" method="POST">
+                                    <input type="hidden" name="accion" value="jugar">
+                                    <button>🎾 JUGAR</button>
+                                </form>
+
+                                <form action="accion_mascota.php" method="POST">
+                                    <input type="hidden" name="accion" value="limpiar">
+                                    <button>🛁 LIMPIAR</button>
+                                </form>
+
+                            </div>
+
                         </div>
+
+
+                        <!-- ECO BARRA -->
+                        <div class="eco-barra">
+
+                            <h2>🌍 ECO BARRA</h2>
+
+                            <div class="barra-eco">
+                                <div class="nivel brillo" style="width:<?php echo $nivel_eco ?>%">
+                                    <?php echo $nivel_eco ?>%
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                        <!-- ESTADISTICAS -->
+                        <div class="estadisticas-grid">
+
+                            <?php
+                            $stats = [
+                                'Hambre' => 'hambre',
+                                'Sueño' => 'sueno',
+                                'Diversión' => 'diversion',
+                                'Higiene' => 'higiene'
+                            ];
+
+                            foreach ($stats as $label => $key):
+
+                                $val = $mascota[$key];
+
+                                // Asignamos una clase CSS según el valor para cambiar el color
+                                $estado = ($val < 40) ? 'bajo' : (($val < 80) ? 'medio' : 'alto');
+                            ?>
+
+                                <div class="barra">
+
+                                    <label>
+                                        <span><?php echo $label; ?></span>
+                                        <span><?php echo $val; ?>%</span>
+                                    </label>
+
+                                    <div class="progreso">
+                                        <div class="valor <?php echo $estado; ?>" style="width: <?php echo $val; ?>%"></div>
+                                    </div>
+
+                                </div>
+
+                            <?php endforeach; ?>
+
+                        </div>
+
                     </div>
-                <?php endforeach; ?>
-            </div>
-            <!-- ACCIONES -->
-            <div class="acciones">
-                <form action="accion_mascota.php" method="POST">
-                    <input type="hidden" name="accion" value="alimentar">
-                    <button>🍎 COMER</button>
-                </form>
 
-                <form action="accion_mascota.php" method="POST">
-                    <input type="hidden" name="accion" value="dormir">
-                    <button>😴 DORMIR</button>
-                </form>
 
-                <form action="accion_mascota.php" method="POST">
-                    <input type="hidden" name="accion" value="jugar">
-                    <button>🎾 JUGAR</button>
-                </form>
+                    <!-- COLUMNA DERECHA (MISIONES) -->
+                    <div class="panel-misiones">
 
-                <form action="accion_mascota.php" method="POST">
-                    <input type="hidden" name="accion" value="limpiar">
-                    <button>🛁 LIMPIAR</button>
-                </form>
-            </div>
+                        <h2>🌍 Misiones ecológicas</h2>
+
+                        <div class="misiones">
+
+                            <?php foreach ($misiones as $mision): ?>
+
+                                <form action="completar_mision.php" method="POST">
+
+                                    <input type="hidden" name="mision_id" value="<?php echo $mision["id"]; ?>">
+
+                                    <div class="mision">
+
+                                        <h3><?php echo $mision["titulo"]; ?></h3>
+
+                                        <p><?php echo $mision["descripcion"]; ?></p>
+
+                                        <button>
+                                            +<?php echo $mision["recompensa"]; ?> ECO
+                                        </button>
+
+                                    </div>
+
+                                </form>
+
+                            <?php endforeach; ?>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            <?php endif; ?>
+
+        </div>
 
     </div>
-<?php endif; ?>
-</div>
-
-</body>
-
-</html>
