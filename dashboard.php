@@ -151,7 +151,7 @@ if ($mascota) {
 
     // Construimos el nombre del archivo de la mascota (ej: "planta_verde.png" o "animal_azul.png")
     $img_mascota = $mascota['tipo'] . "_" . $mascota['color'] . ".png";
-    
+
     // --- 5. MENSAJES DE LA MASCOTA (BOCADILLO) ---
 
     $mensaje = "";
@@ -206,68 +206,68 @@ if ($mascota) {
         }
     }
 }
-// 6. MISIONES (MOSTRAR SOLO MISIONES NO COMPLETADAS HOY)
+    // 6. MISIONES (MOSTRAR SOLO MISIONES NO COMPLETADAS HOY)
 
-$sql_misiones = "
-SELECT *
-FROM misiones
-WHERE id NOT IN (
-    SELECT id_mision
-    FROM misiones_completadas
-    WHERE id_usuario = :usuario
-    AND DATE(fecha) = CURDATE()
-)
-ORDER BY RAND()
-LIMIT 3
-";
+    $sql_misiones = "
+    SELECT *
+    FROM misiones
+    WHERE id NOT IN (
+        SELECT id_mision
+        FROM misiones_completadas
+        WHERE id_usuario = :usuario
+        AND DATE(fecha) = CURDATE()
+    )
+    ORDER BY RAND()
+    LIMIT 3
+    ";
 
-$consulta = $bd->prepare($sql_misiones);
-$consulta->execute([
-    ":usuario" => $_SESSION["usuario_id"]
-]);
+    $consulta = $bd->prepare($sql_misiones);
+    $consulta->execute([
+        ":usuario" => $_SESSION["usuario_id"]
+    ]);
 
-$misiones = $consulta->fetchAll(PDO::FETCH_ASSOC);
+    $misiones = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
-// 7. API DEL TIEMPO
-$apiKey = "2b38874df3e4f0aab602b288b36e2fe2";
-$ciudad = "Madrid";
+    // 7. API DEL TIEMPO
+    $apiKey = "2b38874df3e4f0aab602b288b36e2fe2";
+    $ciudad = "Madrid";
 
-$url = "https://api.openweathermap.org/data/2.5/weather?q=$ciudad&appid=$apiKey&units=metric&lang=es";
+    $url = "https://api.openweathermap.org/data/2.5/weather?q=$ciudad&appid=$apiKey&units=metric&lang=es";
 
-$respuesta = file_get_contents($url);
-$datos = json_decode($respuesta, true);
+    $respuesta = file_get_contents($url);
+    $datos = json_decode($respuesta, true);
 
-$clima = $datos["weather"][0]["main"];
+    $clima = $datos["weather"][0]["main"];
 
-$clase_clima = "";
+    $clase_clima = "";
 
-switch ($clima) {
+    switch ($clima) {
 
-    case "Clear":
-        $clase_clima = "clima-sol";
-        break;
+        case "Clear":
+            $clase_clima = "clima-sol";
+            break;
 
-    case "Rain":
-        $clase_clima = "clima-lluvia";
-        break;
+        case "Rain":
+            $clase_clima = "clima-lluvia";
+            break;
 
-    case "Clouds":
-        $clase_clima = "clima-nubes";
-        break;
+        case "Clouds":
+            $clase_clima = "clima-nubes";
+            break;
 
-    case "Thunderstorm":
-        $clase_clima = "clima-tormenta";
-        break;
+        case "Thunderstorm":
+            $clase_clima = "clima-tormenta";
+            break;
 
-    default:
-        $clase_clima = "clima-normal";
-}
-// Aviso por muerte
-if (isset($_GET["mascota"]) && $_GET["mascota"] == "muerta"): ?>
-    <div style="background:#6b21a8;padding:15px;text-align:center;">
-        💀 Tu mascota murió por falta de cuidados.
-    </div>
-<?php endif; ?>
+        default:
+            $clase_clima = "clima-normal";
+    }
+    // Aviso por muerte
+    if (isset($_GET["mascota"]) && $_GET["mascota"] == "muerta"): ?>
+        <div style="background:#6b21a8;padding:15px;text-align:center;">
+            💀 Tu mascota murió por falta de cuidados.
+        </div>
+    <?php endif; ?>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -276,6 +276,7 @@ if (isset($_GET["mascota"]) && $_GET["mascota"] == "muerta"): ?>
     <meta charset="UTF-8">
     <title>Dashboard - EcoGotchi</title>
     <link rel="stylesheet" href="css/styles.css">
+    <script src="js/funciones.js"></script>
 </head>
 
 <body class="dashboard-body">
@@ -453,8 +454,8 @@ if (isset($_GET["mascota"]) && $_GET["mascota"] == "muerta"): ?>
 
                                         <p><?php echo $mision["descripcion"]; ?></p>
 
-                                        <button>
-                                            +<?php echo $mision["recompensa"]; ?> ECO
+                                        <button type="button" onclick="resolverMision(<?php echo $mision['id']; ?>)">
+                                            Resolver misión
                                         </button>
 
                                     </div>
