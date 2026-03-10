@@ -41,6 +41,9 @@ function iniciarClicRapido(idMision) {
         }
         modal.remove();
     }, tiempoLimite);
+
+    // Botón de salir
+    crearBotonSalir(modal, timer);
 }
 
 // -------------------- SECUENCIA DE TECLAS --------------------
@@ -49,6 +52,7 @@ function iniciarSecuenciaTeclas(idMision) {
         ["a","s","d","f"],
         ["q","w","e","r"],
         ["⬆️","⬇️","⬅️","➡️"],
+        ["⬅️","⬅️","➡️","➡️","⬆️","⬇️"]
         ["z","x","c","v","b"]
     ];
 
@@ -58,7 +62,13 @@ function iniciarSecuenciaTeclas(idMision) {
     const modal = crearModal("Secuencia de teclas", `Presiona esta secuencia: ${patron.join(" → ")}`);
     
     function keyHandler(e) {
-        if (e.key === patron[indice]) {
+        let tecla = e.key.toLowerCase();
+
+        // Map de flechas a emoticonos
+        const flechas = {"ArrowUp":"⬆️","ArrowDown":"⬇️","ArrowLeft":"⬅️","ArrowRight":"➡️"};
+        if(flechas[e.key]) tecla = flechas[e.key];
+
+        if (tecla === patron[indice]) {
             indice++;
             if (indice === patron.length) {
                 alert("¡Misión completada!");
@@ -73,6 +83,9 @@ function iniciarSecuenciaTeclas(idMision) {
     }
 
     document.addEventListener("keydown", keyHandler);
+
+    // Botón de salir
+    crearBotonSalir(modal, () => document.removeEventListener("keydown", keyHandler));
 }
 
 // -------------------- ACERTIJOS --------------------
@@ -104,6 +117,7 @@ function iniciarAcertijo(idMision) {
             alert("Incorrecto, inténtalo otra vez.");
         }
     });
+    crearBotonSalir(modal, null); // permitir salir
 }
 
 // -------------------- MODAL GENÉRICO --------------------
@@ -177,4 +191,27 @@ function completarMision(idMision) {
     }).then(res => {
         if(res.ok) location.reload(); // Recarga para actualizar ECO
     });
+}
+
+// -------------------- CREAR BOTÓN SALIR --------------------
+function crearBotonSalir(modal, limpiar=null) {
+    const botonSalir = document.createElement("button");
+    botonSalir.textContent = "Salir de la misión";
+    Object.assign(botonSalir.style, {
+        marginTop: "10px",
+        marginLeft:"10px",
+        padding: "8px 20px",
+        borderRadius: "8px",
+        background: "#f87171",
+        border: "none",
+        color: "#fff",
+        fontWeight: "bold",
+        cursor: "pointer"
+    });
+    botonSalir.addEventListener("click", () => {
+        if (typeof limpiar === "function") limpiar();
+        else if (typeof limpiar === "number") clearTimeout(limpiar);
+        modal.remove();
+    });
+    modal.querySelector("div").appendChild(botonSalir);
 }
