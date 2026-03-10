@@ -121,35 +121,54 @@ if ($mascota) {
         $mascota["diversion"] = $diversion;
         $mascota["higiene"] = $higiene;
     }
-
-
     // --- 4. LÓGICA VISUAL (FONDOS Y SPRITES) ---
-    // Determinamos qué fondo mostrar según el nivel ecológico
     $nivel_eco = $entorno['nivel_ecologico'];
 
-    if ($nivel_eco > 70) {
-        $estado_entorno = "verde";
-    } elseif ($nivel_eco < 30) {
-        $estado_entorno = "contaminado";
-    } else {
-        $estado_entorno = "normal";
-    }
-
-    switch ($estado_entorno) {
-
-        case "verde":
+    switch (true) {
+        case ($nivel_eco > 70):
+            $estado_entorno = "verde";
             $img_fondo = "fondo_bueno.png";
             break;
 
-        case "contaminado":
+        case ($nivel_eco >= 50 && $nivel_eco <= 70):
+            $estado_entorno = "normal";
+            $img_fondo = "fondo_normal.png";
+            break;
+
+        case ($nivel_eco >= 21 && $nivel_eco <= 49):
+            $estado_entorno = "malo";
             $img_fondo = "fondo_malo.png";
             break;
 
-        default:
-            $img_fondo = "fondo_normal.png";
+        default: // 20 o menos
+            $estado_entorno = "extremo";
+            $img_fondo = "fondo_chungo.png";
+            break;
     }
 
-    // Construimos el nombre del archivo de la mascota (ej: "planta_verde.png" o "animal_azul.png")
+    // Calcula color de la barra según nivel_eco
+    if ($nivel_eco > 50) {
+        // Verde → Amarillo
+        $ratio = ($nivel_eco - 50) / 50; // 50-100
+        $r = 255 * (1 - $ratio);   // De 255 a 0
+        $g = 255;                   // Siempre verde
+        $b = 0;
+    } elseif ($nivel_eco > 20) {
+        // Amarillo → Rojo
+        $ratio = ($nivel_eco - 20) / 30; // 21-50
+        $r = 255;                   // Rojo
+        $g = 255 * $ratio;          // De 255 → 0
+        $b = 0;
+    } else {
+        // Nivel muy bajo → rojo oscuro
+        $r = 180;
+        $g = 0;
+        $b = 0;
+    }
+
+    $color_barra = "rgb($r, $g, $b)";
+
+    //Construimos el nombre del archivo de la mascota (ej: "planta_verde.png" o "animal_azul.png")
     $img_mascota = $mascota['tipo'] . "_" . $mascota['color'] . ".png";
 
     // --- 5. MENSAJES DE LA MASCOTA (BOCADILLO) ---
@@ -206,9 +225,9 @@ if ($mascota) {
         }
     }
 }
-    // 6. MISIONES (MOSTRAR SOLO MISIONES NO COMPLETADAS HOY)
+// 6. MISIONES (MOSTRAR SOLO MISIONES NO COMPLETADAS HOY)
 
-    $sql_misiones = "
+$sql_misiones = "
     SELECT *
     FROM misiones
     WHERE id NOT IN (
@@ -221,53 +240,53 @@ if ($mascota) {
     LIMIT 3
     ";
 
-    $consulta = $bd->prepare($sql_misiones);
-    $consulta->execute([
-        ":usuario" => $_SESSION["usuario_id"]
-    ]);
+$consulta = $bd->prepare($sql_misiones);
+$consulta->execute([
+    ":usuario" => $_SESSION["usuario_id"]
+]);
 
-    $misiones = $consulta->fetchAll(PDO::FETCH_ASSOC);
+$misiones = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
-    // 7. API DEL TIEMPO
-    $apiKey = "2b38874df3e4f0aab602b288b36e2fe2";
-    $ciudad = "Madrid";
+// 7. API DEL TIEMPO
+$apiKey = "2b38874df3e4f0aab602b288b36e2fe2";
+$ciudad = "Madrid";
 
-    $url = "https://api.openweathermap.org/data/2.5/weather?q=$ciudad&appid=$apiKey&units=metric&lang=es";
+$url = "https://api.openweathermap.org/data/2.5/weather?q=$ciudad&appid=$apiKey&units=metric&lang=es";
 
-    $respuesta = file_get_contents($url);
-    $datos = json_decode($respuesta, true);
+$respuesta = file_get_contents($url);
+$datos = json_decode($respuesta, true);
 
-    $clima = $datos["weather"][0]["main"];
+$clima = $datos["weather"][0]["main"];
 
-    $clase_clima = "";
+$clase_clima = "";
 
-    switch ($clima) {
+switch ($clima) {
 
-        case "Clear":
-            $clase_clima = "clima-sol";
-            break;
+    case "Clear":
+        $clase_clima = "clima-sol";
+        break;
 
-        case "Rain":
-            $clase_clima = "clima-lluvia";
-            break;
+    case "Rain":
+        $clase_clima = "clima-lluvia";
+        break;
 
-        case "Clouds":
-            $clase_clima = "clima-nubes";
-            break;
+    case "Clouds":
+        $clase_clima = "clima-nubes";
+        break;
 
-        case "Thunderstorm":
-            $clase_clima = "clima-tormenta";
-            break;
+    case "Thunderstorm":
+        $clase_clima = "clima-tormenta";
+        break;
 
-        default:
-            $clase_clima = "clima-normal";
-    }
-    // Aviso por muerte
-    if (isset($_GET["mascota"]) && $_GET["mascota"] == "muerta"): ?>
-        <div style="background:#6b21a8;padding:15px;text-align:center;">
-            💀 Tu mascota murió por falta de cuidados.
-        </div>
-    <?php endif; ?>
+    default:
+        $clase_clima = "clima-normal";
+}
+// Aviso por muerte
+if (isset($_GET["mascota"]) && $_GET["mascota"] == "muerta"): ?>
+    <div style="background:#6b21a8;padding:15px;text-align:center;">
+        💀 Tu mascota murió por falta de cuidados.
+    </div>
+<?php endif; ?>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -388,7 +407,8 @@ if ($mascota) {
                             <h2>🌍 ECO BARRA</h2>
 
                             <div class="barra-eco">
-                                <div class="nivel brillo" style="width:<?php echo $nivel_eco ?>%">
+                                <div class="nivel brillo"
+                                    style="width:<?php echo $nivel_eco ?>%; background-color: <?php echo $color_barra ?>;">
                                     <?php echo $nivel_eco ?>%
                                 </div>
                             </div>
