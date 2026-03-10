@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 10-03-2026 a las 10:47:21
+-- Tiempo de generación: 10-03-2026 a las 10:56:57
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.1.25
 
@@ -31,18 +31,19 @@ CREATE TABLE `entorno` (
   `id` int(11) NOT NULL,
   `id_usuario` int(11) DEFAULT NULL,
   `nivel_ecologico` int(11) DEFAULT 50,
-  `estado_entorno` varchar(30) DEFAULT 'normal'
+  `estado_entorno` varchar(30) DEFAULT 'normal',
+  `fecha_ultima_actualizacion` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `entorno`
 --
 
-INSERT INTO `entorno` (`id`, `id_usuario`, `nivel_ecologico`, `estado_entorno`) VALUES
-(1, 1, 70, 'normal'),
-(2, 3, 50, 'normal'),
-(3, 2, 65, 'normal'),
-(4, 4, 100, 'normal');
+INSERT INTO `entorno` (`id`, `id_usuario`, `nivel_ecologico`, `estado_entorno`, `fecha_ultima_actualizacion`) VALUES
+(1, 1, 70, 'normal', '2026-03-10 10:56:40'),
+(2, 3, 50, 'normal', '2026-03-10 10:56:40'),
+(3, 2, 65, 'normal', '2026-03-10 10:56:40'),
+(4, 4, 100, 'normal', '2026-03-10 10:56:40');
 
 -- --------------------------------------------------------
 
@@ -72,7 +73,7 @@ INSERT INTO `mascotas` (`id`, `id_usuario`, `nombre`, `tipo`, `color`, `hambre`,
 (4, 3, 'Jorge', 'fantasia', 'azul', 16, 58, 16, 58, 100, '2026-03-09 15:43:52'),
 (6, 2, 'jimmy', 'animal', 'azul', 22, 91, 22, 51, 100, '2026-03-09 17:39:20'),
 (9, 4, 'Kevin', 'fantasia', 'verde', 60, 82, 60, 80, 100, '2026-03-10 09:59:38'),
-(10, 1, 'Luisito', 'animal', 'azul', 46, 63, 46, 63, 100, '2026-03-10 10:42:38');
+(10, 1, 'Luisito', 'animal', 'azul', 30, 55, 30, 55, 100, '2026-03-10 10:52:21');
 
 -- --------------------------------------------------------
 

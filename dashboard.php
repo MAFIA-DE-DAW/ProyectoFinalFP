@@ -165,8 +165,25 @@ if ($mascota) {
         $g = 0;
         $b = 0;
     }
-
+    
+    //degradación barra eco 
     $color_barra = "rgb($r, $g, $b)";
+
+    $ultima_eco = strtotime($entorno["fecha_ultima_actualizacion"]);
+    $diferencia_segundos = $ahora - $ultima_eco;
+    $minutos = floor($diferencia_segundos / 60);
+
+    // degradación automática, por ejemplo 1 punto por minuto
+    if ($minutos > 0) {
+        $nivel_eco = max(0, $entorno["nivel_ecologico"] - $minutos);
+        $sql_update_eco = "UPDATE entorno 
+                       SET nivel_ecologico = :nivel, fecha_ultima_actualizacion = NOW()
+                       WHERE id_usuario = :usuario";
+        $bd->prepare($sql_update_eco)->execute([
+            ':nivel' => $nivel_eco,
+            ':usuario' => $id_usuario
+        ]);
+    }
 
     //Construimos el nombre del archivo de la mascota (ej: "planta_verde.png" o "animal_azul.png")
     $img_mascota = $mascota['tipo'] . "_" . $mascota['color'] . ".png";
@@ -263,7 +280,7 @@ if ($respuesta !== false) {
     $lluvia = isset($datos["rain"]["1h"]) ? $datos["rain"]["1h"] : 0; // mm en la última hora
 
     if ($lluvia > 0 || in_array($clima, ["Rain", "Drizzle", "Mist", "Haze"])) {
-        $clase_clima = "clima-lluvia"; 
+        $clase_clima = "clima-lluvia";
     } elseif ($clima === "Clear") {
         $clase_clima = "clima-sol";
     } elseif ($clima === "Clouds") {
