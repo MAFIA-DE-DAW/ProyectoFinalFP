@@ -165,7 +165,7 @@ if ($mascota) {
         $g = 0;
         $b = 0;
     }
-    
+
     //degradación barra eco 
     $color_barra = "rgb($r, $g, $b)";
 
