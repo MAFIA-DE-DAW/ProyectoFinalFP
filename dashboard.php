@@ -134,6 +134,23 @@ if ($nivel_eco > 50) {
 }
 $color_barra = "rgb($r,$g,$b)";
 
+// Después de determinar color y fondo, se calcula degradación automática
+$ultima_eco = strtotime($entorno["fecha_ultima_actualizacion"]);
+$diferencia_segundos = $ahora - $ultima_eco;
+$minutos = floor($diferencia_segundos / 60);
+
+// degradación automática, por ejemplo 1 punto por minuto
+if ($minutos > 0) {
+    $nivel_eco = max(0, $entorno["nivel_ecologico"] - $minutos);
+    $sql_update_eco = "UPDATE entorno 
+                       SET nivel_ecologico = :nivel, fecha_ultima_actualizacion = NOW()
+                       WHERE id_usuario = :usuario";
+    $bd->prepare($sql_update_eco)->execute([
+        ':nivel' => $nivel_eco,
+        ':usuario' => $id_usuario
+    ]);
+}
+
 // Imagen mascota (solo si está viva)
 if ($mascota && isset($mascota['tipo'], $mascota['color'])) {
     $img_mascota = $mascota['tipo'] . "_" . $mascota['color'] . ".png";
@@ -221,7 +238,7 @@ if ($respuesta !== false) {
                                 <!-- ESCENARIO -->
                                 <div class="escenario-pet <?php echo $clase_clima; ?> estado-<?php echo $estado_entorno; ?>" style="background-image:url('img/<?php echo $img_fondo; ?>');">
                                     <div class="clima-overlay"></div>
-                                    
+
                                     <!-- NOMBRE ARRIBA (solo si está viva) -->
                                     <?php if ($mascota): ?>
                                         <div class="cartel-nombre">
