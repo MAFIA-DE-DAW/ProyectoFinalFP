@@ -292,8 +292,15 @@ if ($respuesta !== false) {
 
 // Aviso por muerte
 if (isset($_GET["mascota"]) && $_GET["mascota"] == "muerta"): ?>
-    <div style="background:#6b21a8;padding:15px;text-align:center;">
+    <div class="mensaje-muerte">
         💀 Tu mascota murió por falta de cuidados.
+    </div>
+
+    <div class="tumba-con-nombre">
+        <div class="tumba">🪦</div>
+        <div class="nombre-mascota-muerta">
+            <?php echo htmlspecialchars($mascota["nombre"] ?? "Tu mascota"); ?>
+        </div>
     </div>
 <?php endif; ?>
 
