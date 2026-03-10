@@ -49,10 +49,10 @@ if ($mascota) {
     $minutos = floor($diferencia_segundos / 60);
 
     if ($minutos > 0) {
-        $hambre = max(0, $mascota["hambre"] - ($minutos * 100));
-        $sueno = max(0, $mascota["sueno"] - ($minutos * 100));
-        $diversion = max(0, $mascota["diversion"] - ($minutos * 100));
-        $higiene = max(0, $mascota["higiene"] - ($minutos * 100));
+        $hambre = max(0, $mascota["hambre"] - ($minutos * 2));
+        $sueno = max(0, $mascota["sueno"] - ($minutos * 1));
+        $diversion = max(0, $mascota["diversion"] - ($minutos * 2));
+        $higiene = max(0, $mascota["higiene"] - ($minutos * 1));
 
         // --- COMPROBAR MUERTE ---
         if ($hambre == 0 || $sueno == 0 || $diversion == 0 || $higiene == 0) {
