@@ -106,7 +106,7 @@ input:focus {
 }
 
 /* =========================
-4 DASHBOARD
+4 DASHBOARD Y CREAR MASCOTA
 ========================= */
 
 .dashboard {
@@ -160,6 +160,26 @@ header h1 {
         0 0 6px rgba(168, 85, 247, 0.6),
         0 0 12px rgba(168, 85, 247, 0.3);
     font-size: 14px;
+}
+
+/* Inputs y selects más grandes en crear_mascota.php */
+input[type="text"],
+select,
+input[type="number"],
+input[type="email"] {
+    width: 100%;
+    /* ocupan todo el ancho del contenedor */
+    max-width: 400px;
+    /* opcional: para no ser gigantes en pantallas muy grandes */
+    padding: 12px 15px;
+    /* más espacio dentro del input */
+    font-size: 1.1em;
+    /* letra más grande */
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+    /* separa un poco entre campos */
+    box-sizing: border-box;
 }
 
 /* =========================
@@ -531,6 +551,16 @@ header h1 {
     box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
 }
 
+/* Hover */
+.logout:hover {
+    background: #ff4b4b;
+    /* un rojo más intenso */
+    box-shadow: 0 6px 20px rgba(255, 75, 75, 0.4);
+    /* sombra más pronunciada */
+    transform: translateY(-2px);
+    /* levanta un poquito el botón */
+}
+
 /* =========================
 9 ECOLOGIA
 ========================= */
@@ -878,43 +908,55 @@ header h1 {
 13 MUERTE
 ========================= */
 
-.tumba-con-nombre {
-    text-align: center;
-    margin-top: 20px;
+/* ================== TUMBA Y MASCOTA MUERTA ================== */
+.tumba-escenario {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+    /* Para que quede por encima del clima */
 }
 
-.tumba-con-nombre .tumba {
-    font-size: 80px;  /* Tamaño grande para la tumba */
-    animation: aparecer 1s ease-in-out forwards;
+.tumba-escenario .tumba {
+    font-size: 5rem;
+    /* Tumba grande */
+    line-height: 1;
+    margin-bottom: 5px;
 }
 
-.tumba-con-nombre .nombre-mascota-muerta {
-    font-size: 24px;
+.tumba-escenario .nombre-tumba {
+    font-size: 1.5rem;
+    /* Texto más grande */
     font-weight: bold;
-    color: #f5f5f5;
-    margin-top: -10px; /* Ajusta para que quede pegado a la tumba */
-}
-
-/* Animación de aparición */
-@keyframes aparecer {
-    0% {
-        transform: scale(0);
-        opacity: 0;
-    }
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-/* Mensaje de muerte */
-.mensaje-muerte {
-    background: #6b21a8;
-    padding: 15px;
+    color: #fefefe;
+    text-shadow: 1px 1px 3px #000;
+    margin-bottom: 5px;
     text-align: center;
-    color: #fff;
+}
+
+.tumba-escenario .flores {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.tumba-escenario .btn-accion {
+    padding: 12px 25px;
+    border-radius: 10px;
+    background: linear-gradient(145deg, #22c55e, #4ade80);
+    /* igual que tus botones */
+    border: none;
+    color: #064e3b;
     font-weight: bold;
-    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s all;
+    font-size: 1rem;
+}
+
+.tumba-escenario .btn-accion:hover {
+    background: linear-gradient(145deg, #4ade80, #22c55e);
+    /* efecto hover igual que tus otros botones */
 }
 
 /* =========================
