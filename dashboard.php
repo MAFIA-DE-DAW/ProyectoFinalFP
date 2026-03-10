@@ -247,40 +247,32 @@ $consulta->execute([
 
 $misiones = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
-// 7. API DEL TIEMPO
+// --- 7. API DEL TIEMPO ---
 $apiKey = "2b38874df3e4f0aab602b288b36e2fe2";
 $ciudad = "Madrid";
 
+// Llamada a la API de OpenWeather
 $url = "https://api.openweathermap.org/data/2.5/weather?q=$ciudad&appid=$apiKey&units=metric&lang=es";
+$respuesta = @file_get_contents($url); // @ para evitar warning si hay error
+$clase_clima = "clima-normal"; // default
 
-$respuesta = file_get_contents($url);
-$datos = json_decode($respuesta, true);
+if ($respuesta !== false) {
+    $datos = json_decode($respuesta, true);
 
-$clima = $datos["weather"][0]["main"];
+    $clima = $datos["weather"][0]["main"];
+    $lluvia = isset($datos["rain"]["1h"]) ? $datos["rain"]["1h"] : 0; // mm en la última hora
 
-$clase_clima = "";
-
-switch ($clima) {
-
-    case "Clear":
+    if ($lluvia > 0 || in_array($clima, ["Rain", "Drizzle", "Mist", "Haze"])) {
+        $clase_clima = "clima-lluvia"; 
+    } elseif ($clima === "Clear") {
         $clase_clima = "clima-sol";
-        break;
-
-    case "Rain":
-        $clase_clima = "clima-lluvia";
-        break;
-
-    case "Clouds":
+    } elseif ($clima === "Clouds") {
         $clase_clima = "clima-nubes";
-        break;
-
-    case "Thunderstorm":
+    } elseif ($clima === "Thunderstorm") {
         $clase_clima = "clima-tormenta";
-        break;
-
-    default:
-        $clase_clima = "clima-normal";
+    }
 }
+
 // Aviso por muerte
 if (isset($_GET["mascota"]) && $_GET["mascota"] == "muerta"): ?>
     <div style="background:#6b21a8;padding:15px;text-align:center;">
