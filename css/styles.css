@@ -266,28 +266,26 @@ header h1 {
 
     position: absolute;
 
-    top: 20px;
+    top: 60%;
     left: 80%;
 
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%);
 
     background: white;
     color: #1e293b;
 
-    padding: 10px 16px;
+    padding: 12px 18px;
 
     border-radius: 12px;
 
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
 
     box-shadow: 0 6px 15px rgba(0, 0, 0, 0.35);
 
-    z-index: 10;
+    z-index: 20;
 
 }
-
-/* triangulo del bocadillo */
 
 .bocadillo::after {
 
@@ -295,15 +293,15 @@ header h1 {
 
     position: absolute;
 
-    bottom: -10px;
-    left: 50%;
+    left: -12px;
+    top: 50%;
 
-    transform: translateX(-50%);
+    transform: translateY(-50%);
 
     border-width: 10px;
     border-style: solid;
 
-    border-color: white transparent transparent transparent;
+    border-color: transparent white transparent transparent;
 
 }
 
@@ -863,14 +861,107 @@ header h1 {
 
 }
 
-@media (max-width: 1000px) {
+/* =========================
+   RESPONSIVE TABLET
+========================= */
+
+@media (max-width: 1024px) {
 
     .layout-principal {
-        grid-template-columns: 1fr;
+        flex-direction: column;
+        align-items: center;
     }
 
     .panel-misiones {
-        order: -1;
+        width: 100%;
+        margin-top: 30px;
+    }
+
+    .columna-juego {
+        width: 100%;
+    }
+
+}
+
+/* =========================
+   MOVILES 
+========================= */
+
+@media (max-width:868px) {
+
+    /* Dashboard padding general */
+    .dashboard {
+        padding: 15px;
+    }
+
+    /* CABECERA */
+    header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 8px;
+    }
+
+    /* Logo EcoGotchi */
+    header h1 {
+        font-size: 26px;
+    }
+
+    /* Contenedor usuario */
+    .usuario {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Texto jugador */
+    .usuario span {
+        font-size: 13px;
+    }
+
+    /* Botón cerrar sesión */
+    .logout {
+        font-size: 13px;
+        padding: 8px 16px;
+    }
+
+    /* ESCENARIO */
+    .escenario-pet {
+        height: 360px;
+        /* aumentado para mejor visibilidad */
+        padding-bottom: 20px;
+    }
+
+    /* NOMBRE MASCOTA */
+    .cartel-nombre {
+        font-size: 16px;
+        top: 20px;
+    }
+
+    /* BOCADILLO */
+    .bocadillo {
+        top: 70px;
+        /* un poco más abajo */
+        left: 75%;
+        /* a la derecha */
+        transform: translateX(-50%);
+        font-size: 13px;
+        padding: 10px 10px;
+    }
+
+    .bocadillo::after {
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 10px;
+    }
+
+    /* BOTONES ACCIÓN */
+    .acciones button {
+        padding: 12px;
+        font-size: 14px;
     }
 
 }

@@ -152,7 +152,7 @@ if ($mascota) {
     // Construimos el nombre del archivo de la mascota (ej: "planta_verde.png" o "animal_azul.png")
     $img_mascota = $mascota['tipo'] . "_" . $mascota['color'] . ".png";
     
-    // --- MENSAJES DE LA MASCOTA (BOCADILLO) ---
+    // --- 5. MENSAJES DE LA MASCOTA (BOCADILLO) ---
 
     $mensaje = "";
 
@@ -206,7 +206,7 @@ if ($mascota) {
         }
     }
 }
-//MISIONES (MOSTRAR SOLO MISIONES NO COMPLETADAS HOY)
+// 6. MISIONES (MOSTRAR SOLO MISIONES NO COMPLETADAS HOY)
 
 $sql_misiones = "
 SELECT *
@@ -228,7 +228,7 @@ $consulta->execute([
 
 $misiones = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
-// API DEL TIEMPO
+// 7. API DEL TIEMPO
 $apiKey = "2b38874df3e4f0aab602b288b36e2fe2";
 $ciudad = "Madrid";
 
