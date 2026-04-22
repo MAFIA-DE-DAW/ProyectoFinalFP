@@ -36,17 +36,18 @@ class Mascota
     }
 
     // Método para actualizar las estadísticas de la mascota
-    public static function actualizarStats($bd, $id_usuario, $hambre, $sueno, $diversion, $higiene)
+    public static function actualizarStats($bd, $id_usuario, $hambre, $sueno, $diversion, $higiene, $basura)
     {
         // Consulta SQL para guardar las estadísticas actualizadas
         $sql_update = "UPDATE mascotas 
                        SET hambre = :h, 
                            sueno = :s, 
                            diversion = :d, 
-                           higiene = :hi, 
+                           higiene = :hi,
+                           basura = :b,
                            fecha_ultima_actualizacion = NOW() 
                        WHERE id_usuario = :id";
-
+        
         // Preparamos la consulta
         $consulta = $bd->prepare($sql_update);
 
@@ -56,6 +57,24 @@ class Mascota
             ':s' => $sueno,
             ':d' => $diversion,
             ':hi' => $higiene,
+            ':b' => $basura,
+            ':id' => $id_usuario
+        ]);
+    }
+    
+    public function actualizarBasura($bd, $id_usuario, $basura) {
+        // Consulta SQL para guardar la basura actualizada
+        $sql_update = "UPDATE mascotas 
+                       SET basura = :b,
+                           fecha_ultima_actualizacion = NOW() 
+                       WHERE id_usuario = :id";
+
+        // Preparamos la consulta
+        $consulta = $bd->prepare($sql_update);
+        
+        // Ejecutamos la consulta con los nuevos valores
+        return $consulta->execute([
+            ':b' => $basura,
             ':id' => $id_usuario
         ]);
     }
@@ -136,6 +155,12 @@ class Mascota
                 "Necesito un baño 🛁",
                 "Estoy muy sucio...",
                 "Hora de limpiarme"
+            ];
+        } elseif ($mascota["basura"]) {
+            $mensajes = [
+                "Si lo ves caer, hazlo desaparecer (en la papelera).",
+                "Haz que tu huella sea limpia, no visible.",
+                "Ensuciar es fácil, limpiar es responsabilidad."
             ];
         } else {
             $mensajes = [

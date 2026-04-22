@@ -49,24 +49,25 @@ function iniciarClicRapido(idMision) {
 // -------------------- SECUENCIA DE TECLAS --------------------
 function iniciarSecuenciaTeclas(idMision) {
     const patrones = [
-        ["a","s","d","f"],
-        ["q","w","e","r"],
-        ["⬆️","⬇️","⬅️","➡️"],
-        ["⬅️","⬅️","➡️","➡️","⬆️","⬇️"]
-        ["z","x","c","v","b"]
+        ["a", "s", "d", "f"],
+        ["q", "w", "e", "r"],
+        ["⬆️", "⬇️", "⬅️", "➡️"],
+        ["⬅️", "⬅️", "➡️", "➡️", "⬆️", "⬇️"]
+        ["z", "x", "c", "v", "b"]
     ];
 
     const patron = patrones[Math.floor(Math.random() * patrones.length)];
     let indice = 0;
 
     const modal = crearModal("Secuencia de teclas", `Presiona esta secuencia: ${patron.join(" → ")}`);
-    
+
     function keyHandler(e) {
         let tecla = e.key.toLowerCase();
 
         // Map de flechas a emoticonos
-        const flechas = {"ArrowUp":"⬆️","ArrowDown":"⬇️","ArrowLeft":"⬅️","ArrowRight":"➡️"};
-        if(flechas[e.key]) tecla = flechas[e.key];
+        const flechas = {"ArrowUp": "⬆️", "ArrowDown": "⬇️", "ArrowLeft": "⬅️", "ArrowRight": "➡️"};
+        if (flechas[e.key])
+            tecla = flechas[e.key];
 
         if (tecla === patron[indice]) {
             indice++;
@@ -186,20 +187,46 @@ function completarMision(idMision) {
     // Aquí puedes llamar a tu PHP via fetch para marcar la misión como completada
     fetch(`completar_mision.php`, {
         method: "POST",
-        headers: {"Content-Type":"application/x-www-form-urlencoded"},
+        headers: {"Content-Type": "application/x-www-form-urlencoded"},
         body: `mision_id=${idMision}`
     }).then(res => {
-        if(res.ok) location.reload(); // Recarga para actualizar ECO
+        if (res.ok)
+            location.reload(); // Recarga para actualizar ECO
     });
 }
 
+//---------------------PAPELERA-------------------------------
+function manejarDrag(e) {
+    e.dataTransfer.setData("text", e.target.id);
+}
+
+function manejarDrop(e, basura) {
+    e.preventDefault();
+    const id = e.dataTransfer.getData("text");
+    const elemento = document.getElementById(id);
+
+    if (elemento) {
+        elemento.remove();
+
+        // 1. Ejecutamos la lógica de limpieza en la sesión
+        fetch(`limpiar_basura.php`, {
+            method: "POST",
+            headers: {"Content-Type": "application/x-www-form-urlencoded"},
+            body: `basura=${basura}`
+        }).then(res => {
+            if (res.ok)
+                location.reload(); // Recarga para actualizar ECO
+        });
+    }
+}
+
 // -------------------- CREAR BOTÓN SALIR --------------------
-function crearBotonSalir(modal, limpiar=null) {
+function crearBotonSalir(modal, limpiar = null) {
     const botonSalir = document.createElement("button");
     botonSalir.textContent = "Salir de la misión";
     Object.assign(botonSalir.style, {
         marginTop: "10px",
-        marginLeft:"10px",
+        marginLeft: "10px",
         padding: "8px 20px",
         borderRadius: "8px",
         background: "#f87171",
@@ -209,8 +236,10 @@ function crearBotonSalir(modal, limpiar=null) {
         cursor: "pointer"
     });
     botonSalir.addEventListener("click", () => {
-        if (typeof limpiar === "function") limpiar();
-        else if (typeof limpiar === "number") clearTimeout(limpiar);
+        if (typeof limpiar === "function")
+            limpiar();
+        else if (typeof limpiar === "number")
+            clearTimeout(limpiar);
         modal.remove();
     });
     modal.querySelector("div").appendChild(botonSalir);

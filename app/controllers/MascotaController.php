@@ -51,23 +51,30 @@ class MascotaController
                     $sueno = $mascota["sueno"];
                     $diversion = $mascota["diversion"];
                     $higiene = $mascota["higiene"];
+                    $basura = $mascota["basura"];
 
                     // Según la acción se modifican las estadísticas
                     switch ($accion) {
                         case "alimentar":
                             $hambre += 20;
+                            $higiene -= 5;
+                            $basura += 1;
                             break;
 
                         case "dormir":
                             $sueno += 30;
+                            $hambre -= 5;
                             break;
 
                         case "jugar":
                             $diversion += 20;
+                            $higiene -= 5; 
+                            $sueno -= 5; 
                             break;
 
-                        case "limpiar":
+                        case "duchar":
                             $higiene += 20;
+                            $diversion -= 5;
                             break;
 
                         default:
@@ -76,13 +83,14 @@ class MascotaController
                     }
 
                     // Ningún valor puede superar 100
-                    $hambre = min($hambre, 100);
-                    $sueno = min($sueno, 100);
-                    $diversion = min($diversion, 100);
-                    $higiene = min($higiene, 100);
-
+                    $hambre = max(0,min($hambre, 100));
+                    $sueno =  max(0,min($sueno, 100));
+                    $diversion = max(0,min($diversion, 100));
+                    $higiene = max(0,min($higiene, 100));
+                    $basura = min($basura, 20);
+                    
                     // Actualizamos las estadísticas desde el modelo
-                    Mascota::actualizarStats($bd, $_SESSION["usuario_id"], $hambre, $sueno, $diversion, $higiene);
+                    Mascota::actualizarStats($bd, $_SESSION["usuario_id"], $hambre, $sueno, $diversion, $higiene, $basura);
                 }
 
                 // Redirigimos al dashboard

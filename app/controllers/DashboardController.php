@@ -59,7 +59,7 @@ class DashboardController
                 } else {
 
                     // Guardamos las estadísticas actualizadas en la base de datos
-                    Mascota::actualizarStats($bd, $id_usuario, $hambre, $sueno, $diversion, $higiene);
+                    Mascota::actualizarStats($bd, $id_usuario, $hambre, $sueno, $diversion, $higiene, $mascota['basura']);
 
                     // Actualizamos también el array local de la mascota
                     $mascota["hambre"] = $hambre;

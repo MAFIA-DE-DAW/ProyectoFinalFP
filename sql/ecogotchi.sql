@@ -62,6 +62,7 @@ CREATE TABLE `mascotas` (
   `diversion` int(11) DEFAULT 80,
   `higiene` int(11) DEFAULT 80,
   `salud` int(11) DEFAULT 100,
+  `basura` int(11) DEFAULT 0,
   `fecha_ultima_actualizacion` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
