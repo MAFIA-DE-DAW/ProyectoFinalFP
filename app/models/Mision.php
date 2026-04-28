@@ -60,6 +60,7 @@ class Mision
 
         return $mision["recompensa"];
     }
+<<<<<<< HEAD
 
     // Método para obtener la recompensa completa de una misión (eco + monedas)
     public static function obtenerRecompensaCompleta($bd, $id_mision)
@@ -73,4 +74,6 @@ class Mision
 
         return $consulta->fetch(PDO::FETCH_ASSOC);
     }
+=======
+>>>>>>> origin/main
 }

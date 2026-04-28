@@ -29,12 +29,19 @@ class MisionController
         try {
 
             // Obtener recompensa
+<<<<<<< HEAD
             $recompensas = Mision::obtenerRecompensaCompleta($bd, $mision_id);
             $puntos_eco = $recompensas["recompensa"] ?? null;
             $puntos_monedas = $recompensas["puntos_monedas"] ?? 0;
 
             // Validamos que la misión exista
             if (!$puntos_eco) {
+=======
+            $puntos = Mision::obtenerRecompensa($bd, $mision_id);
+
+            // Validamos que la misión exista
+            if (!$puntos) {
+>>>>>>> origin/main
                 header("Location: dashboard.php");
                 exit;
             }
@@ -49,11 +56,15 @@ class MisionController
             MisionCompletada::guardar($bd, $id_usuario, $mision_id);
 
             // Subir eco
+<<<<<<< HEAD
             Entorno::subirEco($bd, $id_usuario, $puntos_eco);
 
             // Sumar monedas verdes al usuario
             require_once __DIR__ . "/../models/Usuario.php";
             Usuario::sumarMonedas($bd, $id_usuario, $puntos_monedas);
+=======
+            Entorno::subirEco($bd, $id_usuario, $puntos);
+>>>>>>> origin/main
 
             // Redirigir al dashboard
             header("Location: dashboard.php");

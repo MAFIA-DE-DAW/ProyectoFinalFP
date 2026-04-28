@@ -6,7 +6,10 @@ $clave = '';
 try{
     // Crear conexión con PDO
     $bd = new PDO($cadena_conexion, $usuario, $clave);
+<<<<<<< HEAD
     $bd->exec("SET NAMES utf8mb4");
+=======
+>>>>>>> origin/main
     // Configurar PDO para que muestre errores como excepciones
     $bd->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {

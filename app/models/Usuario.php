@@ -39,6 +39,7 @@ class Usuario
             ':password' => $password_hash
         ]);
     }
+<<<<<<< HEAD
 
     // Método para obtener los datos de un usuario por su ID
     public static function obtenerPorId($bd, $id)
@@ -70,4 +71,6 @@ class Usuario
             ':id' => $id_usuario
         ]);
     }
+=======
+>>>>>>> origin/main
 }
