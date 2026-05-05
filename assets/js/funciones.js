@@ -141,17 +141,7 @@ function crearModal(titulo, descripcion) {
     });
 
     const contenedor = document.createElement("div");
-    Object.assign(contenedor.style, {
-        background: "#1e293b",
-        padding: "30px",
-        borderRadius: "15px",
-        textAlign: "center",
-        maxWidth: "400px",
-        width: "100%",
-        boxShadow: "0 6px 15px rgba(0,0,0,0.5)",
-        color: "#bbf7d0",
-        fontFamily: "'Segoe UI', sans-serif"
-    });
+    contenedor.classList.add('popup-mision'); 
 
     const tituloEl = document.createElement("h2");
     tituloEl.textContent = titulo;

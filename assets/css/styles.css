@@ -782,6 +782,17 @@ input[type="email"] {
         0 0 10px rgba(74, 222, 128, 0.8);
 }
 
+.popup-mision {
+    background: #1e293b;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    width: auto; /*hace que el texto no se suba para arriba*/
+    box-shadow: 0 6px 15px rgba(0,0,0,0.5);
+    color: #bbf7d0;
+    font-family: 'Segoe UI', sans-serif;
+}
+
 /* =========================
 12 ANIMACIONES
 ========================= */
