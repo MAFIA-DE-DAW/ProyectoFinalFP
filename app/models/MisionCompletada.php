@@ -25,7 +25,7 @@ class MisionCompletada
         $sql = "SELECT COUNT(*) FROM misiones_completadas
                 WHERE id_usuario = :usuario
                 AND id_mision = :mision
-                AND DATE(fecha) = CURDATE()";
+                AND fecha::date = CURRENT_DATE";
 
         $consulta = $bd->prepare($sql);
         $consulta->execute([

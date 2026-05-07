@@ -12,9 +12,9 @@ class Mision
         SELECT * FROM misiones
         WHERE id NOT IN (
             SELECT id_mision FROM misiones_completadas
-            WHERE id_usuario = :usuario AND DATE(fecha) = CURDATE()
+            WHERE id_usuario = :usuario AND fecha::date = CURRENT_DATE
         )
-        ORDER BY RAND() LIMIT 3";
+        ORDER BY RANDOM() LIMIT 3";
 
         // Preparamos la consulta
         $consulta = $bd->prepare($sql_misiones);
@@ -34,7 +34,7 @@ class Mision
         SELECT COUNT(*) 
         FROM misiones_completadas
         WHERE id_usuario = :usuario
-        AND DATE(fecha) = CURDATE()
+        AND fecha::date = CURRENT_DATE
         ";
 
         // Preparamos la consulta
