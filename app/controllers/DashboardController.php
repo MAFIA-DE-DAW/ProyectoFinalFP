@@ -44,18 +44,26 @@ class DashboardController
                     // Guardamos el nombre de la mascota en sesión
                     $_SESSION["mascota_muerta"] = $mascota["nombre"];
 
-                    // Eliminamos la mascota de la base de datos
+                    // Actualizamos el array con los valores reales tras la degradación
+                    $mascota["hambre"] = $hambre;
+                    $mascota["sueno"] = $sueno;
+                    $mascota["diversion"] = $diversion;
+                    $mascota["higiene"] = $higiene;
+
+                    // Guardamos en historial ANTES de eliminarla
+                    Mascota::guardarEnHistorial($bd, $mascota, "muerte");
+
+                    // Eliminamos la mascota activa
                     Mascota::eliminarPorUsuario($bd, $id_usuario);
 
-                    // Reiniciamos el entorno ecológico
+                    // Reiniciamos entorno
                     Entorno::reiniciarEco($bd, $id_usuario);
 
-                    // Indicamos que ya no hay mascota viva
+                    // Ahora sí indicamos que ya no hay mascota viva
                     $mascota = false;
 
-                    // Recargamos el entorno actualizado
+                    // Recargamos entorno
                     $entorno = Entorno::obtenerPorUsuario($bd, $id_usuario);
-
                 } else {
 
                     // Guardamos las estadísticas actualizadas en la base de datos

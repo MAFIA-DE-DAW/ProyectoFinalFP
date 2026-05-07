@@ -2,6 +2,7 @@
 
 require_once __DIR__ . "/../../config/database.php";
 require_once __DIR__ . "/../models/Mascota.php";
+require_once __DIR__ . "/../models/Entorno.php";
 
 class MascotaController
 {
@@ -16,8 +17,12 @@ class MascotaController
             $tipo = $_POST["tipo"];
             $color = $_POST["color"];
 
+            $id_usuario = $_SESSION["usuario_id"];
+
             try {
-                Mascota::crear($bd, $_SESSION["usuario_id"], $nombre, $tipo, $color);
+                Mascota::crear($bd, $id_usuario, $nombre, $tipo, $color);
+
+                Entorno::reiniciarEco($bd, $id_usuario);
 
                 header("Location: dashboard.php");
                 exit();
@@ -68,8 +73,8 @@ class MascotaController
 
                         case "jugar":
                             $diversion += 20;
-                            $higiene -= 5; 
-                            $sueno -= 5; 
+                            $higiene -= 5;
+                            $sueno -= 5;
                             break;
 
                         case "duchar":
@@ -83,12 +88,12 @@ class MascotaController
                     }
 
                     // Ningún valor puede superar 100
-                    $hambre = max(0,min($hambre, 100));
-                    $sueno =  max(0,min($sueno, 100));
-                    $diversion = max(0,min($diversion, 100));
-                    $higiene = max(0,min($higiene, 100));
+                    $hambre = max(0, min($hambre, 100));
+                    $sueno =  max(0, min($sueno, 100));
+                    $diversion = max(0, min($diversion, 100));
+                    $higiene = max(0, min($higiene, 100));
                     $basura = min($basura, 20);
-                    
+
                     // Actualizamos las estadísticas desde el modelo
                     Mascota::actualizarStats($bd, $_SESSION["usuario_id"], $hambre, $sueno, $diversion, $higiene, $basura);
                 }
@@ -101,5 +106,4 @@ class MascotaController
             }
         }
     }
-
 }

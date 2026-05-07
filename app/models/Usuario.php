@@ -70,4 +70,43 @@ class Usuario
             ':id' => $id_usuario
         ]);
     }
+    // Método para eliminar definitivamente la cuenta del usuario
+    public static function eliminarCuenta($bd, $id_usuario)
+    {
+        try {
+
+            $bd->beginTransaction();
+
+            // Eliminamos datos relacionados
+
+            $consulta = $bd->prepare("DELETE FROM compras WHERE id_usuario = :id");
+            $consulta->execute([':id' => $id_usuario]);
+
+            $consulta = $bd->prepare("DELETE FROM misiones_completadas WHERE id_usuario = :id");
+            $consulta->execute([':id' => $id_usuario]);
+
+            $consulta = $bd->prepare("DELETE FROM mascotas WHERE id_usuario = :id");
+            $consulta->execute([':id' => $id_usuario]);
+
+            $consulta = $bd->prepare("DELETE FROM mascotas_historial WHERE id_usuario = :id");
+            $consulta->execute([':id' => $id_usuario]);
+
+            $consulta = $bd->prepare("DELETE FROM entorno WHERE id_usuario = :id");
+            $consulta->execute([':id' => $id_usuario]);
+
+            // Eliminamos usuario
+
+            $consulta = $bd->prepare("DELETE FROM usuarios WHERE id = :id");
+            $consulta->execute([':id' => $id_usuario]);
+
+            $bd->commit();
+
+            return true;
+        } catch (PDOException $e) {
+
+            $bd->rollBack();
+
+            return false;
+        }
+    }
 }

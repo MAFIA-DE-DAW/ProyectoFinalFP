@@ -46,4 +46,27 @@ class UsuarioController
         // Cargamos la vista del formulario de registro
         require_once __DIR__ . "/../views/auth/registro.php";
     }
+    public function baja()
+    {
+        global $bd;
+
+        $id_usuario = $_SESSION["usuario_id"];
+        $error = "";
+
+        if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+            if (Usuario::eliminarCuenta($bd, $id_usuario)) {
+
+                session_destroy();
+
+                header("Location: registro.php");
+                exit();
+            } else {
+
+                $error = "Error al eliminar la cuenta.";
+            }
+        }
+
+        require_once __DIR__ . "/../views/usuario/baja.php";
+    }
 }

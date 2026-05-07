@@ -47,7 +47,7 @@ class Mascota
                            basura = :b,
                            fecha_ultima_actualizacion = NOW() 
                        WHERE id_usuario = :id";
-        
+
         // Preparamos la consulta
         $consulta = $bd->prepare($sql_update);
 
@@ -61,8 +61,9 @@ class Mascota
             ':id' => $id_usuario
         ]);
     }
-    
-    public function actualizarBasura($bd, $id_usuario, $basura) {
+
+    public function actualizarBasura($bd, $id_usuario, $basura)
+    {
         // Consulta SQL para guardar la basura actualizada
         $sql_update = "UPDATE mascotas 
                        SET basura = :b,
@@ -71,7 +72,7 @@ class Mascota
 
         // Preparamos la consulta
         $consulta = $bd->prepare($sql_update);
-        
+
         // Ejecutamos la consulta con los nuevos valores
         return $consulta->execute([
             ':b' => $basura,
@@ -94,8 +95,8 @@ class Mascota
     // Método para comprobar si la mascota ha muerto
     public static function estaMuerta($hambre, $sueno, $diversion, $higiene)
     {
-        // Si alguna necesidad llega a 0, la mascota muere
-        return ($hambre == 0 || $sueno == 0 || $diversion == 0 || $higiene == 0);
+        // Si alguna necesidad es menor o igual a 0, la mascota muere
+        return ($hambre <= 0 && $sueno <= 0 && $diversion <= 0 && $higiene <= 0);
     }
 
     // Método para calcular cuántos minutos han pasado desde la última actualización
@@ -183,5 +184,46 @@ class Mascota
 
         // Si no hay mascota devolvemos null
         return null;
+    }
+
+    // Método para guardar una mascota en el historial antes de eliminarla
+    public static function guardarEnHistorial($bd, $mascota, $motivo = "muerte")
+    {
+        $sql = "INSERT INTO mascotas_historial 
+            (id_usuario, nombre, tipo, color, hambre, sueno, diversion, higiene, salud, basura, fecha_ultima_actualizacion, fecha_fin, motivo_fin)
+            VALUES 
+            (:id_usuario, :nombre, :tipo, :color, :hambre, :sueno, :diversion, :higiene, :salud, :basura, :fecha_ultima_actualizacion, NOW(), :motivo)";
+
+        $consulta = $bd->prepare($sql);
+
+        return $consulta->execute([
+            ':id_usuario' => $mascota['id_usuario'],
+            ':nombre' => $mascota['nombre'],
+            ':tipo' => $mascota['tipo'],
+            ':color' => $mascota['color'],
+            ':hambre' => $mascota['hambre'],
+            ':sueno' => $mascota['sueno'],
+            ':diversion' => $mascota['diversion'],
+            ':higiene' => $mascota['higiene'],
+            ':salud' => $mascota['salud'],
+            ':basura' => $mascota['basura'],
+            ':fecha_ultima_actualizacion' => $mascota['fecha_ultima_actualizacion'],
+            ':motivo' => $motivo
+        ]);
+    }
+
+    // Método para obtener el historial de mascotas de un usuario
+    public static function obtenerHistorialPorUsuario($bd, $id_usuario)
+    {
+        $sql = "SELECT * FROM mascotas_historial 
+            WHERE id_usuario = :id_usuario
+            ORDER BY fecha_fin DESC";
+
+        $consulta = $bd->prepare($sql);
+        $consulta->execute([
+            ':id_usuario' => $id_usuario
+        ]);
+
+        return $consulta->fetchAll(PDO::FETCH_ASSOC);
     }
 }
