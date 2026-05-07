@@ -1,45 +1,16 @@
 <?php
 // ============================================================
 // Router principal para Vercel (Serverless PHP)
-// Gestiona rutas PHP Y sirve archivos estáticos con
-// el Content-Type correcto (CSS, JS, imágenes, etc.)
+// Vercel sirve los archivos estáticos directamente (handle:filesystem)
+// Este router solo procesa peticiones PHP
 // ============================================================
 
 $uri  = $_SERVER['REQUEST_URI'];
 $path = parse_url($uri, PHP_URL_PATH);
 $root = __DIR__ . '/../';
 
-// --- 1. Servir archivos estáticos (CSS, JS, imágenes…) ---
-$static_file = $root . ltrim($path, '/');
-if (is_file($static_file) && !str_ends_with($path, '.php')) {
-    $ext = strtolower(pathinfo($static_file, PATHINFO_EXTENSION));
-    $content_types = [
-        'css'   => 'text/css; charset=utf-8',
-        'js'    => 'application/javascript; charset=utf-8',
-        'png'   => 'image/png',
-        'jpg'   => 'image/jpeg',
-        'jpeg'  => 'image/jpeg',
-        'gif'   => 'image/gif',
-        'svg'   => 'image/svg+xml',
-        'ico'   => 'image/x-icon',
-        'webp'  => 'image/webp',
-        'woff'  => 'font/woff',
-        'woff2' => 'font/woff2',
-        'ttf'   => 'font/ttf',
-        'eot'   => 'application/vnd.ms-fontobject',
-        'json'  => 'application/json',
-    ];
-    $content_type = $content_types[$ext] ?? 'application/octet-stream';
-    header('Content-Type: ' . $content_type);
-    header('Cache-Control: public, max-age=86400');
-    readfile($static_file);
-    exit;
-}
-
-// --- 2. Enrutar peticiones PHP ---
-$path = trim($path, '/');
-
 // Eliminar extensión .php si viene en la URL
+$path = trim($path, '/');
 $path = preg_replace('/\.php$/', '', $path);
 
 // Mapa de rutas → archivos PHP del proyecto
