@@ -46,7 +46,7 @@ if ($es_local) {
 if (!$es_local) {
     // --- PRODUCCIÓN / SUPABASE Transaction Pooler ---
     // IPv4 compatible — Ideal para serverless (Vercel)
-    $cadena_conexion = "pgsql:host={$db_host};port={$db_port};dbname={$db_name};sslmode=require";
+    $cadena_conexion = "pgsql:host={$db_host};port={$db_port};dbname={$db_name};sslmode=require;options='--client_encoding=UTF8'";
     try {
         $bd = new PDO($cadena_conexion, $db_user, $db_password);
         $bd->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
