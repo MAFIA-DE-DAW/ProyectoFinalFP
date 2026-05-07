@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Mi cuenta - EcoGotchi</title>
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="<?= ASSETS_URL ?>/css/styles.css">
 </head>
 
 <body class="dashboard-body">

@@ -18,6 +18,14 @@ $db_port     = getenv('DB_PORT')     ?: '6543';
 // Detectar si estamos en local (XAMPP)
 $es_local = (php_uname('n') !== 'vercel' && file_exists('C:/xampp/mysql/bin/mysqld.exe'));
 
+// Prefijo de assets según entorno
+// - XAMPP local: el proyecto cuelga de /ProyectoFinalFP/
+// - Vercel:      el proyecto está en la raíz /
+if (!defined('ASSETS_URL')) {
+    define('ASSETS_URL', $es_local ? '/ProyectoFinalFP/assets' : '/assets');
+}
+
+
 if ($es_local) {
     // --- LOCAL: XAMPP (MySQL) ---
     try {

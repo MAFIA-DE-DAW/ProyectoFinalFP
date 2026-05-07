@@ -3,7 +3,7 @@
 
 <head>
     <title>Registro - EcoGotchi</title>
-    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="stylesheet" href="<?= ASSETS_URL ?>/css/styles.css">
 </head>
 
 <body class="login">
