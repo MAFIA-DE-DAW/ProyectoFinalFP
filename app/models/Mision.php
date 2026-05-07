@@ -13,8 +13,7 @@ class Mision
         WHERE id NOT IN (
             SELECT id_mision FROM misiones_completadas
             WHERE id_usuario = :usuario AND fecha >= :hoy AND fecha < :manana
-        )
-        ORDER BY RANDOM() LIMIT 3";
+        )";
 
         // Preparamos la consulta
         $consulta = $bd->prepare($sql_misiones);
@@ -26,8 +25,10 @@ class Mision
             ':manana'  => date('Y-m-d', strtotime('+1 day')),
         ]);
 
-        // Devolvemos las misiones en un array
-        return $consulta->fetchAll(PDO::FETCH_ASSOC);
+        // Devolvemos 3 misiones en orden aleatorio (shuffle en PHP = compatible MySQL y PostgreSQL)
+        $misiones = $consulta->fetchAll(PDO::FETCH_ASSOC);
+        shuffle($misiones);
+        return array_slice($misiones, 0, 3);
     }
 
     // Método para contar cuántas misiones ha completado hoy el usuario
