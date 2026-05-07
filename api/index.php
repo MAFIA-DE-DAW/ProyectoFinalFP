@@ -1,19 +1,44 @@
 <?php
 // ============================================================
 // Router principal para Vercel (Serverless PHP)
-// Vercel sirve los archivos estáticos directamente (handle:filesystem)
-// Este router solo procesa peticiones PHP
+// Sirve archivos estáticos Y páginas PHP
 // ============================================================
 
 $uri  = $_SERVER['REQUEST_URI'];
 $path = parse_url($uri, PHP_URL_PATH);
-$root = __DIR__ . '/../';
+$root = realpath(__DIR__ . '/../') . '/';
 
-// Eliminar extensión .php si viene en la URL
+// --- 1. Servir archivos estáticos (CSS, JS, imágenes…) ---
+if ($path !== '/' && !str_ends_with($path, '.php')) {
+    $static_file = $root . ltrim($path, '/');
+    if (is_file($static_file)) {
+        $ext = strtolower(pathinfo($static_file, PATHINFO_EXTENSION));
+        $types = [
+            'css'   => 'text/css; charset=utf-8',
+            'js'    => 'application/javascript; charset=utf-8',
+            'png'   => 'image/png',
+            'jpg'   => 'image/jpeg',
+            'jpeg'  => 'image/jpeg',
+            'gif'   => 'image/gif',
+            'svg'   => 'image/svg+xml',
+            'ico'   => 'image/x-icon',
+            'webp'  => 'image/webp',
+            'woff'  => 'font/woff',
+            'woff2' => 'font/woff2',
+            'ttf'   => 'font/ttf',
+        ];
+        header('Content-Type: ' . ($types[$ext] ?? 'application/octet-stream'));
+        header('Cache-Control: public, max-age=604800');
+        header('Content-Length: ' . filesize($static_file));
+        readfile($static_file);
+        exit;
+    }
+}
+
+// --- 2. Enrutar peticiones PHP ---
 $path = trim($path, '/');
 $path = preg_replace('/\.php$/', '', $path);
 
-// Mapa de rutas → archivos PHP del proyecto
 $routes = [
     ''                 => 'index.php',
     'index'            => 'index.php',
@@ -32,11 +57,7 @@ $routes = [
     'limpiar_basura'   => 'limpiar_basura.php',
 ];
 
-if (isset($routes[$path])) {
-    $file = $root . $routes[$path];
-} else {
-    $file = $root . $path . '.php';
-}
+$file = isset($routes[$path]) ? $root . $routes[$path] : $root . $path . '.php';
 
 header('Content-Type: text/html; charset=utf-8');
 
@@ -46,5 +67,4 @@ if (file_exists($file)) {
 } else {
     http_response_code(404);
     echo '<h1>404 - Página no encontrada</h1>';
-    echo '<p>Ruta: ' . htmlspecialchars($path) . '</p>';
 }
