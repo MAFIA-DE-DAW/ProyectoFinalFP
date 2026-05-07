@@ -1,17 +1,39 @@
 <?php
 // ============================================================
 // Router principal para Vercel (Serverless PHP)
-// Sirve archivos estáticos Y páginas PHP
 // ============================================================
 
 $uri  = $_SERVER['REQUEST_URI'];
 $path = parse_url($uri, PHP_URL_PATH);
-$root = realpath(__DIR__ . '/../') . '/';
 
-// --- 1. Servir archivos estáticos (CSS, JS, imágenes…) ---
+// Calcular root de forma robusta (sin realpath que puede fallar)
+$root = __DIR__ . '/../';
+
+// --- DEBUG: ruta temporal para diagnóstico ---
+if ($path === '/debug-fs') {
+    header('Content-Type: application/json');
+    $test = $root . 'assets/img/fondo_normal.jpg';
+    echo json_encode([
+        '__DIR__'    => __DIR__,
+        'root'       => $root,
+        'test_file'  => $test,
+        'is_file'    => is_file($test),
+        'file_exists'=> file_exists($test),
+        'realpath'   => realpath($root),
+        'ls_assets'  => @scandir($root . 'assets/img/') ?: 'FAILED',
+    ], JSON_PRETTY_PRINT);
+    exit;
+}
+
+// --- 1. Servir archivos estáticos ---
 if ($path !== '/' && !str_ends_with($path, '.php')) {
-    $static_file = $root . ltrim($path, '/');
-    if (is_file($static_file)) {
+    $clean   = ltrim($path, '/');
+    $static1 = $root . $clean;                           // api/../assets/img/xxx
+    $static2 = realpath($root) . '/' . $clean;           // path absoluto resuelto
+
+    $static_file = is_file($static1) ? $static1 : (is_file($static2) ? $static2 : null);
+
+    if ($static_file) {
         $ext = strtolower(pathinfo($static_file, PATHINFO_EXTENSION));
         $types = [
             'css'   => 'text/css; charset=utf-8',
@@ -29,7 +51,6 @@ if ($path !== '/' && !str_ends_with($path, '.php')) {
         ];
         header('Content-Type: ' . ($types[$ext] ?? 'application/octet-stream'));
         header('Cache-Control: public, max-age=604800');
-        header('Content-Length: ' . filesize($static_file));
         readfile($static_file);
         exit;
     }
@@ -67,4 +88,5 @@ if (file_exists($file)) {
 } else {
     http_response_code(404);
     echo '<h1>404 - Página no encontrada</h1>';
+    echo '<p>Path: ' . htmlspecialchars($path) . '</p>';
 }
