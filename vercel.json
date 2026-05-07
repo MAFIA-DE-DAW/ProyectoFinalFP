@@ -1,19 +1,11 @@
 {
   "functions": {
-    "*.php": {
+    "api/index.php": {
       "runtime": "vercel-php@0.7.2"
     }
   },
   "routes": [
     { "src": "/assets/(.*)", "dest": "/assets/$1" },
-    { "src": "/login",       "dest": "/login.php" },
-    { "src": "/logout",      "dest": "/logout.php" },
-    { "src": "/registro",    "dest": "/registro.php" },
-    { "src": "/dashboard",   "dest": "/dashboard.php" },
-    { "src": "/tienda",      "dest": "/tienda.php" },
-    { "src": "/mi-cuenta",   "dest": "/mi_cuenta.php" },
-    { "src": "/historial",   "dest": "/historial.php" },
-    { "src": "/(.*)\\.php",  "dest": "/$1.php" },
-    { "src": "/(.*)",        "dest": "/index.php" }
+    { "src": "/(.*)",        "dest": "/api/index.php" }
   ]
 }
