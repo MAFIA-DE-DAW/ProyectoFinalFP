@@ -4,10 +4,7 @@
       "runtime": "vercel-php@0.7.2"
     }
   },
-  "redirects": [
-    { "source": "/:path*.php", "destination": "/:path*", "permanent": false }
-  ],
-  "rewrites": [
-    { "source": "/:path*", "destination": "/api/index.php" }
+  "routes": [
+    { "src": "/(.*)", "dest": "/api/index.php" }
   ]
 }
