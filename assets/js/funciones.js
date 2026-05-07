@@ -1,5 +1,32 @@
 // funciones.js
 
+// -------------------- TOAST NOTIFICACIÓN --------------------
+function showToast(msg, success = true) {
+    const toast = document.createElement('div');
+    toast.textContent = msg;
+    Object.assign(toast.style, {
+        position: 'fixed',
+        bottom: '40px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        background: success
+            ? 'linear-gradient(135deg,#22c55e,#4ade80)'
+            : 'linear-gradient(135deg,#ef4444,#b91c1c)',
+        color: success ? '#022c22' : '#fff',
+        padding: '18px 36px',
+        borderRadius: '30px',
+        fontWeight: '900',
+        fontSize: '1.1rem',
+        zIndex: '9999',
+        boxShadow: '0 10px 30px rgba(0,0,0,0.4)',
+        transition: 'opacity 0.4s',
+        opacity: '1'
+    });
+    document.body.appendChild(toast);
+    setTimeout(() => { toast.style.opacity = '0'; }, 2500);
+    setTimeout(() => toast.remove(), 3000);
+}
+
 // Función para iniciar una misión
 function resolverMision(idMision) {
     // Elegimos aleatoriamente el tipo de minijuego
@@ -34,10 +61,10 @@ function iniciarClicRapido(idMision) {
 
     const timer = setTimeout(() => {
         if (clicks >= objetivoClicks) {
-            alert("¡Misión completada!");
+            showToast("✅ ¡Misión completada!", true);
             completarMision(idMision);
         } else {
-            alert("No lo lograste, inténtalo otra vez.");
+            showToast("❌ No lo lograste, inténtalo otra vez.", false);
         }
         modal.remove();
     }, tiempoLimite);
@@ -52,7 +79,7 @@ function iniciarSecuenciaTeclas(idMision) {
         ["a", "s", "d", "f"],
         ["q", "w", "e", "r"],
         ["⬆️", "⬇️", "⬅️", "➡️"],
-        ["⬅️", "⬅️", "➡️", "➡️", "⬆️", "⬇️"]
+        ["⬅️", "⬅️", "➡️", "➡️", "⬆️", "⬇️"],
         ["z", "x", "c", "v", "b"]
     ];
 
@@ -72,13 +99,13 @@ function iniciarSecuenciaTeclas(idMision) {
         if (tecla === patron[indice]) {
             indice++;
             if (indice === patron.length) {
-                alert("¡Misión completada!");
+                showToast("✅ ¡Misión completada!", true);
                 document.removeEventListener("keydown", keyHandler);
                 modal.remove();
                 completarMision(idMision);
             }
         } else {
-            alert("Fallaste la secuencia, inténtalo de nuevo.");
+            showToast("❌ Fallaste la secuencia, inténtalo de nuevo.", false);
             indice = 0;
         }
     }
@@ -111,11 +138,11 @@ function iniciarAcertijo(idMision) {
     boton.textContent = "Responder";
     boton.addEventListener("click", () => {
         if (input.value.trim().toLowerCase() === acertijo.respuesta.toLowerCase()) {
-            alert("¡Misión completada!");
+            showToast("✅ ¡Misión completada!", true);
             modal.remove();
             completarMision(idMision);
         } else {
-            alert("Incorrecto, inténtalo otra vez.");
+            showToast("❌ Incorrecto, inténtalo otra vez.", false);
         }
     });
     crearBotonSalir(modal, null); // permitir salir
