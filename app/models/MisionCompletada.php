@@ -25,12 +25,14 @@ class MisionCompletada
         $sql = "SELECT COUNT(*) FROM misiones_completadas
                 WHERE id_usuario = :usuario
                 AND id_mision = :mision
-                AND fecha::date = CURRENT_DATE";
+                AND fecha >= :hoy AND fecha < :manana";
 
         $consulta = $bd->prepare($sql);
         $consulta->execute([
             ":usuario" => $id_usuario,
-            ":mision" => $id_mision
+            ":mision"  => $id_mision,
+            ":hoy"     => date('Y-m-d'),
+            ":manana"  => date('Y-m-d', strtotime('+1 day')),
         ]);
 
         return $consulta->fetchColumn() > 0;

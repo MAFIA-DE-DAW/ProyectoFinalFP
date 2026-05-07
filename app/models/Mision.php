@@ -12,7 +12,7 @@ class Mision
         SELECT * FROM misiones
         WHERE id NOT IN (
             SELECT id_mision FROM misiones_completadas
-            WHERE id_usuario = :usuario AND fecha::date = CURRENT_DATE
+            WHERE id_usuario = :usuario AND fecha >= :hoy AND fecha < :manana
         )
         ORDER BY RANDOM() LIMIT 3";
 
@@ -20,7 +20,11 @@ class Mision
         $consulta = $bd->prepare($sql_misiones);
 
         // Ejecutamos la consulta pasando el id del usuario
-        $consulta->execute([':usuario' => $id_usuario]);
+        $consulta->execute([
+            ':usuario' => $id_usuario,
+            ':hoy'     => date('Y-m-d'),
+            ':manana'  => date('Y-m-d', strtotime('+1 day')),
+        ]);
 
         // Devolvemos las misiones en un array
         return $consulta->fetchAll(PDO::FETCH_ASSOC);
@@ -34,14 +38,18 @@ class Mision
         SELECT COUNT(*) 
         FROM misiones_completadas
         WHERE id_usuario = :usuario
-        AND fecha::date = CURRENT_DATE
+        AND fecha >= :hoy AND fecha < :manana
         ";
 
         // Preparamos la consulta
         $consulta_check = $bd->prepare($sql_check);
 
         // Ejecutamos la consulta con el id del usuario
-        $consulta_check->execute([':usuario' => $id_usuario]);
+        $consulta_check->execute([
+            ':usuario' => $id_usuario,
+            ':hoy'     => date('Y-m-d'),
+            ':manana'  => date('Y-m-d', strtotime('+1 day')),
+        ]);
 
         // Devolvemos el total
         return $consulta_check->fetchColumn();
