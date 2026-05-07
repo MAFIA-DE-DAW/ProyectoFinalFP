@@ -106,25 +106,25 @@ class Entorno
             case ($nivel_eco > 70):
                 return [
                     "estado_entorno" => "verde",
-                    "img_fondo" => "fondo_bueno.png"
+                    "img_fondo" => "fondo_bueno.jpg"
                 ];
 
             case ($nivel_eco >= 50):
                 return [
                     "estado_entorno" => "normal",
-                    "img_fondo" => "fondo_normal.png"
+                    "img_fondo" => "fondo_normal.jpg"
                 ];
 
             case ($nivel_eco >= 21):
                 return [
                     "estado_entorno" => "malo",
-                    "img_fondo" => "fondo_malo.png"
+                    "img_fondo" => "fondo_malo.jpg"
                 ];
 
             default:
                 return [
                     "estado_entorno" => "extremo",
-                    "img_fondo" => "fondo_chungo.png"
+                    "img_fondo" => "fondo_chungo.jpg"
                 ];
         }
     }

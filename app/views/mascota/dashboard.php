@@ -2,7 +2,7 @@
 $mascota = $mascota ?? false;
 $clase_clima = $clase_clima ?? "";
 $estado_entorno = $estado_entorno ?? "";
-$img_fondo = $img_fondo ?? "fondo_normal.png";
+$img_fondo = $img_fondo ?? "fondo_normal.jpg";
 $mensaje = $mensaje ?? "";
 $img_mascota = $img_mascota ?? null;
 $misiones = $misiones ?? [];
