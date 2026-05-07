@@ -3,6 +3,8 @@
 > **Proyecto Final de Grado Superior — Desarrollo de Aplicaciones Web (DAW)**  
 > Una mascota virtual con conciencia ecológica. Cuida a tu mascota, completa misiones sostenibles y mejora el planeta.
 
+🔗 **Demo en producción:** [https://ecogotchi.vercel.app](https://ecogotchi.vercel.app)
+
 ---
 
 ## 📋 Índice
@@ -37,273 +39,227 @@ El elemento diferenciador es el **Entorno Ecológico**: cada mascota vive en un 
 - Creación de mascota con nombre, tipo (animal / planta / fantasía) y color
 - 4 estadísticas de necesidades: **Hambre**, **Sueño**, **Diversión** e **Higiene**
 - Degradación automática basada en el tiempo real transcurrido desde la última visita
-- Sistema de **basura aleatoria** en el entorno que debe ser recogida
+- Sistema de **basura aleatoria** en el entorno que debe ser recogida mediante drag & drop
 - Si todas las estadísticas llegan a 0 → la mascota **muere** y pasa al historial
 - Acciones disponibles: dar de comer 🍖, dormir 😴, jugar 🎾, bañar 🛁, limpiar basura 🗑️
 
 ### 🌱 Entorno ecológico
 - Nivel ecológico de 0 a 100 con 4 estados visuales: **verde**, **normal**, **malo** y **extremo**
-- Fondo del entorno que cambia dinámicamente según el estado
+- Fondo del entorno que cambia dinámicamente según el estado (imágenes optimizadas JPEG)
 - Barra de progreso con color gradiente (verde → amarillo → rojo)
 - El entorno se degrada con el tiempo y se recupera completando misiones
 
 ### 🎯 Misiones sostenibles
-- Catálogo de 20 misiones ecológicas reales (reciclar plástico, usar transporte público, plantar una planta…)
-- Cada misión otorga puntos ecológicos y **Monedas Verdes**
-- Las misiones completadas se registran con fecha
+- 3 misiones aleatorias diarias distintas por usuario
+- Minijuegos para completarlas: **Clic rápido**, **Secuencia de teclas**, **Acertijo**
+- Recompensa: puntos de eco + Monedas Verdes 💚
+- Notificaciones toast animadas al completar (sin alert() del navegador)
 
-### 🛒 Tienda de Impacto Real
-- 13 acciones de impacto real disponibles para comprar con Monedas Verdes
-- Proyectos como: Punto de Reciclaje, Plantar un Roble, Santuario de Abejas, Reforestar el Amazonas, Pozos de Agua Solar…
-- Cada acción muestra su impacto cuantificado en CO2, agua o biodiversidad
+### 🏪 Tienda de Impacto Real
+- 10 acciones medioambientales reales financiables con Monedas Verdes
+- Historial de contribuciones del usuario
+- Iconos emoji renderizados con fuentes de sistema
 
 ### 📜 Historial de mascotas
-- Registro de todas las mascotas que han muerto o han sido eliminadas
-- Muestra el motivo del fin (muerte o baja del usuario) y la fecha
-
-### 🌤️ Clima en tiempo real
-- Integración con API de clima que muestra el estado meteorológico actual
+- Registro de todas las mascotas que han vivido y muerto
+- Tabla con estadísticas finales y fecha de defunción
 
 ---
 
-## 🛠 Tecnologías utilizadas
+## 🛠️ Tecnologías utilizadas
 
-| Capa | Tecnología |
-|------|-----------|
-| Backend | PHP 8.2 |
-| Base de datos | MySQL / MariaDB → **Supabase (PostgreSQL)** |
-| ORM / acceso a datos | PDO (PHP Data Objects) |
-| Frontend | HTML5, CSS3 (Vanilla), JavaScript |
-| Servidor local | XAMPP (Apache + MariaDB) |
-| Despliegue BD | **Supabase** |
-| Despliegue app | **Vercel** |
-| Control de versiones | Git + GitHub |
+### Backend
+| Tecnología | Uso |
+|---|---|
+| **PHP 8.2** | Lógica de servidor, controladores, modelos |
+| **PDO** | Abstracción de base de datos (MySQL local / PostgreSQL producción) |
+| **Supabase (PostgreSQL)** | Base de datos en producción |
+| **bcrypt** | Hash seguro de contraseñas |
+
+### Frontend
+| Tecnología | Uso |
+|---|---|
+| **HTML5 + CSS3** | Estructura y estilos |
+| **JavaScript (Vanilla)** | Minijuegos, drag & drop, toast notifications, fetch API |
+
+### Infraestructura
+| Tecnología | Uso |
+|---|---|
+| **Vercel** | Hosting serverless con runtime `vercel-php@0.7.2` |
+| **Supabase** | PostgreSQL gestionado + Connection Pooler (PgBouncer) |
+| **GitHub** | Control de versiones y CI/CD automático con Vercel |
+| **XAMPP** | Entorno de desarrollo local (MySQL) |
 
 ---
 
-## 🏗 Arquitectura y estructura del proyecto
+## 🏗️ Arquitectura y estructura del proyecto
 
-El proyecto sigue el patrón **MVC (Modelo–Vista–Controlador)**:
+El proyecto sigue un patrón **MVC simplificado**:
 
 ```
 ProyectoFinalFP/
 │
-├── index.php                    # Punto de entrada
-├── login.php                    # Enrutador → AuthController
-├── registro.php                 # Enrutador → AuthController
-├── logout.php                   # Cierre de sesión
-├── dashboard.php                # Enrutador → DashboardController
-├── crear_mascota.php            # Enrutador → MascotaController
-├── accion_mascota.php           # Enrutador → MascotaController (acciones)
-├── completar_mision.php         # Enrutador → MisionController
-├── tienda.php                   # Enrutador → TiendaController
-├── comprar_accion.php           # Enrutador → TiendaController (compra)
-├── limpiar_basura.php           # Acción limpiar entorno
-├── mi_cuenta.php                # Enrutador → UsuarioController
-├── baja_usuario.php             # Enrutador → UsuarioController (baja)
+├── api/
+│   └── index.php           ← Router principal (Vercel serverless)
 │
 ├── app/
-│   ├── controllers/
-│   │   ├── AuthController.php       # Login y registro
-│   │   ├── DashboardController.php  # Lógica principal del dashboard
-│   │   ├── MascotaController.php    # Creación y acciones de mascota
-│   │   ├── MisionController.php     # Completar misiones
-│   │   ├── TiendaController.php     # Tienda de impacto real
-│   │   ├── HistorialController.php  # Historial de mascotas
-│   │   └── UsuarioController.php    # Gestión de cuenta y baja
+│   ├── controllers/        ← Lógica de negocio
+│   │   ├── AuthController.php
+│   │   ├── DashboardController.php
+│   │   ├── MascotaController.php
+│   │   ├── TiendaController.php
+│   │   └── UsuarioController.php
 │   │
-│   ├── models/
-│   │   ├── Mascota.php          # CRUD + degradación + historial
-│   │   ├── Entorno.php          # Nivel ecológico + estados visuales
-│   │   ├── Mision.php           # Consulta de misiones disponibles
-│   │   ├── MisionCompletada.php # Registro de misiones completadas
-│   │   ├── Tienda.php           # Acciones de la tienda y compras
-│   │   ├── Usuario.php          # Registro, login, monedas, baja
-│   │   └── Clima.php            # Integración API del tiempo
+│   ├── models/             ← Consultas SQL (compatibles MySQL y PostgreSQL)
+│   │   ├── Usuario.php
+│   │   ├── Mascota.php
+│   │   ├── Entorno.php
+│   │   ├── Mision.php
+│   │   ├── MisionCompletada.php
+│   │   ├── Tienda.php
+│   │   └── Clima.php
 │   │
-│   └── views/
-│       ├── auth/
-│       │   ├── login.php
-│       │   └── registro.php
-│       ├── mascota/
-│       │   ├── dashboard.php    # Vista principal con mascota y entorno
-│       │   ├── crear_mascota.php
-│       │   └── historial.php
+│   └── views/              ← Plantillas HTML/PHP
+│       ├── auth/           (login, registro)
+│       ├── mascota/        (dashboard, crear_mascota, historial)
 │       ├── tienda.php
-│       └── usuario/
-│           └── baja.php
-│
-├── config/
-│   └── database.php             # Conexión PDO a la base de datos
-│
-├── includes/
-│   └── proteger.php             # Middleware de protección de rutas
+│       └── usuario/        (baja)
 │
 ├── assets/
-│   ├── css/styles.css
-│   ├── js/funciones.js
-│   └── img/                     # Mascotas, fondos e iconos
+│   ├── css/styles.css      ← Estilos globales (dark mode, responsive)
+│   ├── js/funciones.js     ← Minijuegos, drag & drop, toast
+│   └── img/                ← Sprites de mascotas, fondos optimizados
 │
-└── sql/
-    └── ecogotchi.sql            # Volcado completo de la base de datos
+├── config/
+│   └── database.php        ← Conexión dual MySQL/PostgreSQL + ASSETS_URL
+│
+├── includes/
+│   └── proteger.php        ← Middleware de sesión
+│
+├── sql/
+│   ├── ecogotchi.sql       ← Schema MySQL (desarrollo local)
+│   └── ecogotchi_supabase.sql  ← Schema PostgreSQL (producción)
+│
+├── vercel.json             ← Configuración del runtime PHP en Vercel
+└── README.md
 ```
+
+### Router Vercel (`api/index.php`)
+Vercel no puede ejecutar PHP directamente fuera de `/api/`. El router:
+1. **Sirve archivos estáticos** (CSS, JS, imágenes) mediante `readfile()` con el `Content-Type` correcto
+2. **Enruta URLs limpias** (sin `.php`) al archivo PHP correspondiente
+3. **Elimina extensiones** `.php` de la URL antes de hacer el match
 
 ---
 
-## 🗄 Base de datos
+## 🗄️ Base de datos
 
-La base de datos se llama `ecogotchi` y tiene las siguientes tablas:
-
-### Diagrama de tablas
-
-```
-usuarios ──────┬──── mascotas
-               ├──── mascotas_historial
-               ├──── entorno
-               ├──── misiones_completadas ──── misiones
-               └──── compras ──────────────── tienda_acciones
-```
-
-### Descripción de tablas
+### Tablas principales
 
 | Tabla | Descripción |
-|-------|-------------|
-| `usuarios` | Datos de registro: nombre, email, password (bcrypt), monedas_verdes |
-| `mascotas` | Mascota activa del usuario: nombre, tipo, color, hambre, sueño, diversión, higiene, salud, basura |
-| `mascotas_historial` | Registro de mascotas finalizadas con motivo y fecha de fin |
-| `entorno` | Nivel ecológico (0–100) y estado del entorno por usuario |
-| `misiones` | Catálogo de 20 misiones sostenibles con título, descripción y recompensas |
-| `misiones_completadas` | Registro de qué misión completó cada usuario y cuándo |
-| `tienda_acciones` | Acciones de impacto real disponibles en la tienda con coste en Monedas Verdes |
-| `compras` | Historial de compras de acciones de la tienda por usuario |
+|---|---|
+| `usuarios` | Registro de cuentas con contraseña bcrypt |
+| `mascotas` | Estado actual de la mascota (estadísticas, tipo, color) |
+| `entornos` | Nivel ecológico y estado del entorno por usuario |
+| `misiones` | Catálogo de misiones ecológicas disponibles |
+| `misiones_completadas` | Registro de misiones completadas por fecha y usuario |
+| `tienda_acciones` | Acciones medioambientales disponibles en la tienda |
+| `compras` | Historial de contribuciones de cada usuario |
 
-> El archivo `sql/ecogotchi.sql` contiene el volcado completo con estructura y datos de ejemplo.
+### Compatibilidad MySQL ↔ PostgreSQL
+
+El código usa un patrón de **conexión dual** en `config/database.php`:
+- **Local (XAMPP):** conecta a MySQL en `127.0.0.1`
+- **Producción (Vercel):** conecta a Supabase PostgreSQL vía Transaction Pooler
+
+Las consultas SQL son compatibles con ambos motores. Diferencias manejadas:
+
+| MySQL | PostgreSQL |
+|---|---|
+| `CURDATE()` | `CURRENT_DATE` |
+| `DATE(campo)` | `campo::date` |
+| `RAND()` | `RANDOM()` |
 
 ---
 
 ## 💻 Instalación local (XAMPP)
 
 ### Requisitos
-- XAMPP con PHP 8.x y MariaDB
-- Navegador web moderno
+- XAMPP con PHP 8.0+ y MySQL
+- Git
 
 ### Pasos
 
-1. **Clonar el repositorio** en la carpeta `htdocs` de XAMPP:
-   ```bash
-   git clone https://github.com/MAFIA-DE-DAW/ProyectoFinalFP.git
-   cd ProyectoFinalFP
-   ```
+```bash
+# 1. Clonar el repositorio
+git clone https://github.com/MAFIA-DE-DAW/ProyectoFinalFP.git
+cd ProyectoFinalFP
 
-2. **Importar la base de datos** desde phpMyAdmin:
-   - Crear una base de datos llamada `ecogotchi`
-   - Importar el archivo `sql/ecogotchi.sql`
+# 2. Copiar a htdocs de XAMPP
+# (o clonar directamente en C:\xampp\htdocs\ProyectoFinalFP)
+```
 
-3. **Verificar la conexión** en `config/database.php`:
-   ```php
-   $cadena_conexion = 'mysql:dbname=ecogotchi;host=127.0.0.1;charset=utf8';
-   $usuario = 'root';
-   $clave = '';
-   ```
+```sql
+-- 3. Crear la base de datos en phpMyAdmin o MySQL CLI
+CREATE DATABASE ecogotchi;
+USE ecogotchi;
+-- Importar: sql/ecogotchi.sql
+```
 
-4. **Arrancar XAMPP** (Apache + MySQL) y acceder a:
-   ```
-   http://localhost/ProyectoFinalFP/
-   ```
+```
+# 4. Acceder desde el navegador
+http://localhost/ProyectoFinalFP/
+```
+
+> **Nota:** El sistema detecta automáticamente el entorno local y usa MySQL + rutas `/ProyectoFinalFP/assets/` sin ninguna configuración adicional.
 
 ---
 
 ## 🚀 Despliegue en producción — Supabase + Vercel
 
-### 🗄 Paso 1 — Base de datos en Supabase
+### Arquitectura de producción
 
-1. Crear cuenta en [supabase.com](https://supabase.com) y crear un nuevo proyecto.
+```
+Usuario → Vercel CDN → api/index.php (PHP 8.2 serverless)
+                            ↓
+                    Supabase PostgreSQL
+                    (Transaction Pooler IPv4)
+```
 
-2. En el panel de Supabase ir a **SQL Editor** y ejecutar el contenido de `sql/ecogotchi.sql`.
-   > ⚠️ Supabase usa **PostgreSQL**. Es posible que necesites adaptar algunas sentencias MySQL (por ejemplo, `AUTO_INCREMENT` → `SERIAL`, tipos `tinyint` → `boolean`).
+### Variables de entorno en Vercel
 
-3. Obtener las credenciales de conexión desde **Settings → Database**:
-   - **Host**: `db.xxxxxxxxxxxx.supabase.co`
-   - **Puerto**: `5432`
-   - **Base de datos**: `postgres`
-   - **Usuario**: `postgres`
-   - **Contraseña**: la que configuraste al crear el proyecto
+Configura estas variables en **Vercel → Settings → Environment Variables**:
 
-4. Actualizar `config/database.php` con la cadena de conexión de Supabase:
-   ```php
-   $host     = getenv('DB_HOST')     ?: 'db.xxxxxxxxxxxx.supabase.co';
-   $dbname   = getenv('DB_NAME')     ?: 'postgres';
-   $usuario  = getenv('DB_USER')     ?: 'postgres';
-   $clave    = getenv('DB_PASSWORD') ?: 'tu_contraseña';
-   $puerto   = getenv('DB_PORT')     ?: '5432';
+| Variable | Valor |
+|---|---|
+| `DB_HOST` | `aws-0-eu-west-1.pooler.supabase.com` |
+| `DB_PORT` | `6543` |
+| `DB_NAME` | `postgres` |
+| `DB_USER` | `postgres.hndzzatpgvxsvqittrgf` |
+| `DB_PASSWORD` | *(tu contraseña de Supabase)* |
 
-   $cadena_conexion = "pgsql:host=$host;port=$puerto;dbname=$dbname;sslmode=require";
+### Base de datos Supabase
 
-   try {
-       $bd = new PDO($cadena_conexion, $usuario, $clave);
-       $bd->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-   } catch (PDOException $e) {
-       die('Error con la base de datos: ' . $e->getMessage());
-   }
-   ```
+1. Crear proyecto en [supabase.com](https://supabase.com)
+2. Ir a **SQL Editor** y ejecutar `sql/ecogotchi_supabase.sql`
+3. Usar la URL del **Transaction Pooler** (puerto 6543, modo transacción) para evitar problemas de IPv6 en Vercel
 
-### ☁️ Paso 2 — Despliegue en Vercel
+### Notas técnicas
 
-> ⚠️ Vercel es principalmente una plataforma para aplicaciones Node.js/Next.js. Para PHP necesitas usar **Vercel con el runtime de PHP** o bien un archivo `vercel.json` que configure el servidor PHP.
-
-1. Instalar Vercel CLI:
-   ```bash
-   npm install -g vercel
-   ```
-
-2. Crear el archivo `vercel.json` en la raíz del proyecto:
-   ```json
-   {
-     "functions": {
-       "api/*.php": {
-         "runtime": "vercel-php@0.6.0"
-       }
-     },
-     "routes": [
-       { "src": "/(.*)", "dest": "/index.php" }
-     ]
-   }
-   ```
-
-3. Configurar las **variables de entorno** en el panel de Vercel (Settings → Environment Variables):
-   ```
-   DB_HOST=db.xxxxxxxxxxxx.supabase.co
-   DB_NAME=postgres
-   DB_USER=postgres
-   DB_PASSWORD=tu_contraseña_supabase
-   DB_PORT=5432
-   ```
-
-4. Desplegar:
-   ```bash
-   vercel --prod
-   ```
-
-5. Vercel proporcionará una URL pública tipo `https://ecogotchi.vercel.app` 🎉
+- **Runtime:** `vercel-php@0.7.2` (compatible con Node.js 20)
+- **PDO Emulate Prepares:** activado (`true`) — obligatorio con PgBouncer en modo transacción
+- **Imágenes de fondo:** convertidas de PNG (8MB) a JPEG optimizado (<0.5MB) para cumplir los límites de funciones serverless
+- **ASSETS_URL:** constante dinámica que resuelve `/ProyectoFinalFP/assets` en local y `/assets` en Vercel
 
 ---
 
 ## 👥 Autores
 
-Proyecto desarrollado por el equipo **MAFIA-DE-DAW** para el **Proyecto Final del Grado Superior en Desarrollo de Aplicaciones Web**.
+**MAFIA-DE-DAW** — Proyecto Final de Grado Superior DAW
 
-| Nombre | Rol |
-|--------|-----|
-| Amanda | Desarrollo frontend y backend / vistas /  Arquitectura MVC |
-| Paloma | Desarrollo backend y frontend / modelos |
-| Jose Manuel (Chema) | Arquitectura MVC / base de datos  / Desarrollo fullstack|
+- 🔗 [Repositorio GitHub](https://github.com/MAFIA-DE-DAW/ProyectoFinalFP)
+- 🌐 [Demo en vivo](https://ecogotchi.vercel.app)
 
 ---
 
-<div align="center">
-
-**🌿 EcoGotchi — Cuida tu mascota, salva el planeta 🌍**
-
-[![GitHub](https://img.shields.io/badge/GitHub-MAFIA--DE--DAW-green?style=flat-square&logo=github)](https://github.com/MAFIA-DE-DAW/ProyectoFinalFP)
-
-</div>
+*Desarrollado con 💚 y mucha conciencia ecológica.*
