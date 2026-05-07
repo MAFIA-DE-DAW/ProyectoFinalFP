@@ -39,4 +39,74 @@ class Usuario
             ':password' => $password_hash
         ]);
     }
+
+    // Método para obtener los datos de un usuario por su ID
+    public static function obtenerPorId($bd, $id)
+    {
+        $sql = "SELECT * FROM usuarios WHERE id = :id";
+        $consulta = $bd->prepare($sql);
+        $consulta->execute([':id' => $id]);
+        return $consulta->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Método para sumar monedas verdes a un usuario
+    public static function sumarMonedas($bd, $id_usuario, $cantidad)
+    {
+        $sql = "UPDATE usuarios SET monedas_verdes = monedas_verdes + :cantidad WHERE id = :id";
+        $consulta = $bd->prepare($sql);
+        return $consulta->execute([
+            ':cantidad' => $cantidad,
+            ':id' => $id_usuario
+        ]);
+    }
+
+    // Método para restar monedas verdes (para compras)
+    public static function restarMonedas($bd, $id_usuario, $cantidad)
+    {
+        $sql = "UPDATE usuarios SET monedas_verdes = monedas_verdes - :cantidad WHERE id = :id";
+        $consulta = $bd->prepare($sql);
+        return $consulta->execute([
+            ':cantidad' => $cantidad,
+            ':id' => $id_usuario
+        ]);
+    }
+    // Método para eliminar definitivamente la cuenta del usuario
+    public static function eliminarCuenta($bd, $id_usuario)
+    {
+        try {
+
+            $bd->beginTransaction();
+
+            // Eliminamos datos relacionados
+
+            $consulta = $bd->prepare("DELETE FROM compras WHERE id_usuario = :id");
+            $consulta->execute([':id' => $id_usuario]);
+
+            $consulta = $bd->prepare("DELETE FROM misiones_completadas WHERE id_usuario = :id");
+            $consulta->execute([':id' => $id_usuario]);
+
+            $consulta = $bd->prepare("DELETE FROM mascotas WHERE id_usuario = :id");
+            $consulta->execute([':id' => $id_usuario]);
+
+            $consulta = $bd->prepare("DELETE FROM mascotas_historial WHERE id_usuario = :id");
+            $consulta->execute([':id' => $id_usuario]);
+
+            $consulta = $bd->prepare("DELETE FROM entorno WHERE id_usuario = :id");
+            $consulta->execute([':id' => $id_usuario]);
+
+            // Eliminamos usuario
+
+            $consulta = $bd->prepare("DELETE FROM usuarios WHERE id = :id");
+            $consulta->execute([':id' => $id_usuario]);
+
+            $bd->commit();
+
+            return true;
+        } catch (PDOException $e) {
+
+            $bd->rollBack();
+
+            return false;
+        }
+    }
 }

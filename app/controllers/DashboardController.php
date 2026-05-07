@@ -44,22 +44,30 @@ class DashboardController
                     // Guardamos el nombre de la mascota en sesión
                     $_SESSION["mascota_muerta"] = $mascota["nombre"];
 
-                    // Eliminamos la mascota de la base de datos
+                    // Actualizamos el array con los valores reales tras la degradación
+                    $mascota["hambre"] = $hambre;
+                    $mascota["sueno"] = $sueno;
+                    $mascota["diversion"] = $diversion;
+                    $mascota["higiene"] = $higiene;
+
+                    // Guardamos en historial ANTES de eliminarla
+                    Mascota::guardarEnHistorial($bd, $mascota, "muerte");
+
+                    // Eliminamos la mascota activa
                     Mascota::eliminarPorUsuario($bd, $id_usuario);
 
-                    // Reiniciamos el entorno ecológico
+                    // Reiniciamos entorno
                     Entorno::reiniciarEco($bd, $id_usuario);
 
-                    // Indicamos que ya no hay mascota viva
+                    // Ahora sí indicamos que ya no hay mascota viva
                     $mascota = false;
 
-                    // Recargamos el entorno actualizado
+                    // Recargamos entorno
                     $entorno = Entorno::obtenerPorUsuario($bd, $id_usuario);
-
                 } else {
 
                     // Guardamos las estadísticas actualizadas en la base de datos
-                    Mascota::actualizarStats($bd, $id_usuario, $hambre, $sueno, $diversion, $higiene);
+                    Mascota::actualizarStats($bd, $id_usuario, $hambre, $sueno, $diversion, $higiene, $mascota['basura']);
 
                     // Actualizamos también el array local de la mascota
                     $mascota["hambre"] = $hambre;
@@ -110,6 +118,11 @@ class DashboardController
 
         // Obtenemos la clase visual del clima desde la API
         $clase_clima = Clima::obtenerClaseClima();
+
+        // --- 5 bis. MONEDAS VERDES ---
+        require_once __DIR__ . "/../models/Usuario.php";
+        $datos_usuario = Usuario::obtenerPorId($bd, $id_usuario);
+        $monedas_verdes = $datos_usuario["monedas_verdes"] ?? 0;
 
         // --- 6. CARGA DE LA VISTA ---
         require_once __DIR__ . "/../views/mascota/dashboard.php";
