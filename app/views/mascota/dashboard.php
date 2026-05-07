@@ -16,8 +16,8 @@ $monedas_verdes = $monedas_verdes ?? 0;
 <head>
     <meta charset="UTF-8">
     <title>Dashboard - EcoGotchi</title>
-    <link rel="stylesheet" href="/ProyectoFinalFP/assets/css/styles.css">
-    <script src="/ProyectoFinalFP/assets/js/funciones.js"></script>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <script src="/assets/js/funciones.js"></script>
 </head>
 
 
@@ -60,7 +60,7 @@ $monedas_verdes = $monedas_verdes ?? 0;
                             <div class="game-container">
 
                                 <!-- ESCENARIO -->
-                                <div class="escenario-pet <?php echo $clase_clima; ?> estado-<?php echo $estado_entorno; ?>" style="background-image:url('/ProyectoFinalFP/assets/img/<?php echo $img_fondo; ?>');">
+                                <div class="escenario-pet <?php echo $clase_clima; ?> estado-<?php echo $estado_entorno; ?>" style="background-image:url('/assets/img/<?php echo $img_fondo; ?>');">
                                     <!--PAPELERA  -->
                                     <?php if ($mascota): ?>
                                         <div id="contenedor-basura">
@@ -71,7 +71,7 @@ $monedas_verdes = $monedas_verdes ?? 0;
                                             srand($_SESSION["usuario_id"]);
 
                                             for ($i = 0; $i < $mascota['basura']; $i++) {
-                                                $img_src = "/ProyectoFinalFP/assets/img/" . $opciones[array_rand($opciones)];
+                                                $img_src = "/assets/img/" . $opciones[array_rand($opciones)];
                                                 $randLeft = rand(5, 85);
 
                                                 echo "<img src='" . $img_src . "'
@@ -87,7 +87,7 @@ $monedas_verdes = $monedas_verdes ?? 0;
                                             style="position: absolute; left: 20px; bottom: 40px; z-index: 100;"
                                             ondragover="event.preventDefault()"
                                             ondrop="manejarDrop(event, <?php echo $mascota['basura']; ?>)">
-                                            <img src="/ProyectoFinalFP/assets/img/papelera.png" width="80" alt="Papelera">
+                                            <img src="/assets/img/papelera.png" width="80" alt="Papelera">
                                         </div>
 
                                         <script>
@@ -126,7 +126,7 @@ $monedas_verdes = $monedas_verdes ?? 0;
                                         </div>
                                         <?php unset($_SESSION['mascota_muerta']); ?>
                                     <?php elseif ($mascota && $img_mascota): ?>
-                                        <img src="/ProyectoFinalFP/assets/img/<?php echo $img_mascota; ?>" alt="Mascota" class="mascota-personaje">
+                                        <img src="/assets/img/<?php echo $img_mascota; ?>" alt="Mascota" class="mascota-personaje">
                                     <?php endif; ?>
                                 </div> <!-- FIN ESCENARIO -->
 

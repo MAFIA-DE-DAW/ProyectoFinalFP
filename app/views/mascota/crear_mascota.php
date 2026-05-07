@@ -5,7 +5,7 @@
 
     <title>Crear Mascota</title>
 
-    <link rel="stylesheet" href="/ProyectoFinalFP/assets/css/styles.css">
+    <link rel="stylesheet" href="/assets/css/styles.css">
 
 </head>
 

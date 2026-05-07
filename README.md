@@ -294,9 +294,9 @@ Proyecto desarrollado por el equipo **MAFIA-DE-DAW** para el **Proyecto Final de
 
 | Nombre | Rol |
 |--------|-----|
-| Amanda | Desarrollo frontend / vistas |
-| Paloma | Desarrollo backend / modelos |
-| Manuel (Carlos) | Arquitectura MVC / base de datos |
+| Amanda | Desarrollo frontend y backend / vistas /  Arquitectura MVC |
+| Paloma | Desarrollo backend y frontend / modelos |
+| Jose Manuel (Chema) | Arquitectura MVC / base de datos  / Desarrollo fullstack|
 
 ---
 

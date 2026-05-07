@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Tienda Verde - EcoGotchi</title>
-    <link rel="stylesheet" href="/ProyectoFinalFP/assets/css/styles.css">
+    <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
 <body class="dashboard-body">
     <div class="tienda-container">
         <header class="header-tienda">
             <div class="tienda-info-header">
-                <img src="/ProyectoFinalFP/assets/img/tienda_hero.png" alt="Eco Shop" class="hero-img">
+                <img src="/assets/img/tienda_hero.png" alt="Eco Shop" class="hero-img">
                 <div>
                     <h1>Tienda Verde</h1>
                     <p>¡Tus acciones en el juego se convierten en beneficios para el planeta!</p>
